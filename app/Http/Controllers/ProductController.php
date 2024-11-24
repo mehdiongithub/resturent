@@ -28,6 +28,22 @@ class ProductController extends Controller
     
     }
 
+    public function productData(){
+        $companyId = getUserCompanyId();
+        $storeId = getUserStoreId();
+    
+
+        // Retrieve products based on company_id and store_id
+        $data = Product::where('company_id', $companyId)
+            ->where('store_id', $storeId)
+            ->orderBy('created_at', 'desc')  // Order by created_at descending
+            ->get();
+
+        return response()->json([
+            'data' => $data
+        ],200);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

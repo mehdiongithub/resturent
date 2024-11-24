@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('purchase_invoice_id');
             $table->uuid('product_id');
             $table->integer('quantity');
+            $table->enum('uom', ['liter', 'kg', 'g', 'ml','dozen']);
             $table->decimal('price', 10, 2);
             $table->decimal('discount', 10, 2);
             $table->decimal('total_price', 10, 2);

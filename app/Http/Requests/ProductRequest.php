@@ -26,6 +26,7 @@ class ProductRequest extends FormRequest
             'price' => "required",
             'company_id' => "required",
             'store_id' => "required",
+            'uom' => "required",
             'description' => "nullable",
         ];
     }

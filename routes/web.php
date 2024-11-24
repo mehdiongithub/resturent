@@ -22,6 +22,7 @@ Route::get('dashboard', [UserController::class, 'index'])->name('dashboard')->mi
 Route::get('table', [UserController::class, 'table'])->name('table')->middleware('auth');
 Route::resource('/products', ProductController::class)->middleware('auth');
 Route::post('/updateProduct/{id}', [ProductController::class, 'updateProduct'])->name('updateProduct')->middleware('auth');
+Route::get('/productData', [ProductController::class, 'productData'])->name('productData')->middleware('auth');
 Route::resource('/suppliers', SupplierController::class)->middleware('auth');
 Route::post('/updateSupplier/{id}', [SupplierController::class, 'updateSupplier'])->name('updateSupplier')->middleware('auth');
 Route::get('/supplierData', [SupplierController::class, 'supplierData'])->name('supplierData')->middleware('auth');

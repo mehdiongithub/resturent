@@ -8,6 +8,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
 <!-- Custom CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
 <style>
   /* Styling for the rich text editor */
   
@@ -167,7 +169,9 @@
 </div>
 
 
-
+<script src="{{ asset('assets/auth/js/core/jquery-3.7.1.min.js') }}"></script>
+{{-- Toast JS File --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
   // Preview the selected image
   function previewImage(event) {
@@ -191,4 +195,128 @@
   
 
 
+</script>
+<!-- Your modal HTML code -->
+
+<script>
+  // Image preview logic here...
+
+  // The new JavaScript logic to disable/enable inputs
+  function disableSupplierModalInputs() {
+    const inputs = document.querySelectorAll("#supplier-form input, #supplier-form select, #supplier-form textarea");
+    inputs.forEach(input => {
+      input.disabled = false;
+    });
+  }
+
+  function enableSupplierModalInputs() {
+    const inputs = document.querySelectorAll("#supplier-form input, #supplier-form select, #supplier-form textarea");
+    inputs.forEach(input => {
+      input.disabled = false;
+    });
+  }
+
+  document.getElementById("clear").addEventListener("click", function() {
+    const resetModal = new bootstrap.Modal(document.getElementById("supplierResetModal"));
+    resetModal.show();
+    disableSupplierModalInputs();
+  });
+
+  document.getElementById("confirm-clear").addEventListener("click", function() {
+  // Reset the supplier form
+  document.getElementById("supplier-form").reset();
+
+  // Disable inputs (if needed as part of your logic)
+  disableSupplierModalInputs();
+
+  // Hide the reset modal
+  const resetModalElement = document.getElementById("supplierResetModal");
+  const resetModalInstance = bootstrap.Modal.getInstance(resetModalElement); // Get the existing instance
+  if (resetModalInstance) {
+    resetModalInstance.hide(); // Hide the modal
+    removeImage()
+  }
+});
+
+  document.getElementById("supplierResetModalCloseBtn").addEventListener("click", function() {
+    enableSupplierModalInputs();
+    const resetModal = new bootstrap.Modal(document.getElementById("supplierResetModal"));
+    resetModal.hide();
+  });
+  
+  $(document).ready(function(){
+    $('#supplier-form').submit(function(e) {
+                e.preventDefault(); // Prevent the default form submission
+
+                var formData = new FormData(this); // Create a FormData object
+
+                $.ajax({
+                    url: '{{ route('suppliers.store') }}',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        toastr.success("Supplier successfully added");
+                        $('#supplierModal').modal('hide');
+                        $('#supplier-form')[0].reset();
+
+                        $('#supplier_id').append(
+                            $('<option>', {
+                                value: response.supplier.id,
+                                text: response.supplier.name
+                            })
+                        );
+
+                        $('#supplier_id').val(response.supplier.id);
+                        $('#inputName4').val(response.supplier.name);
+                        $('#inputPhone4').val(response.supplier.phone);
+
+                        selectedSupplier = response.supplier.id;
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, messages) {
+                                messages.forEach(function(message) {
+                                    toastr.error(message);
+                                });
+                            });
+                        } else {
+                            toastr.error('An unexpected error occurred. Please try again.');
+                        }
+                    }
+                });
+            });
+
+            $('#supplier_close_btn, #btn_close').on('click', function() {
+                console.log("Closing supplier modal...");
+
+                if (selectedSupplier !== '' && selectedSupplier !== 0) {
+                    $('#supplier_id').val(selectedSupplier);
+                    $('#supplier_id').trigger('change');
+                } else {
+                    $('#supplier_id').val('');
+                    $('#supplier_id').trigger('change');
+                }
+
+                // Get the Bootstrap Modal instance and hide it
+                var supplierModal = new bootstrap.Modal(document.getElementById('supplierModal'));
+                if (supplierModal) {
+                    supplierModal.hide(); // This will hide the modal and manage the backdrop correctly
+                }
+
+                // Manually ensure the backdrop is removed and the body is unlocked
+                document.body.classList.remove('modal-open');
+                var modalBackdrop = document.querySelector('.modal-backdrop');
+                if (modalBackdrop) {
+                    modalBackdrop.classList.remove('show');
+                }
+
+                // Ensure the form fields are enabled again
+                console.log("Enabling form fields...");
+                $('input, select, textarea').prop('disabled', false);
+            });
+
+  })
 </script>

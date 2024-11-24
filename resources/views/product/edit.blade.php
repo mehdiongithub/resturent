@@ -2,8 +2,6 @@
 @section('style')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
-    <!-- Include Bootstrap for styling -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Include Bootstrap Icons for camera icon -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -18,6 +16,15 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 8px;
+        }
+
+        .unit_of_mesu .select2-container .select2-selection--single {
+            height: 37px !important;
+            padding-top: 5px
+        }
+
+        .unit_of_mesu .select2-selection__arrow {
+            top: 5px !important;
         }
 
         /* Styling for photo upload container */
@@ -105,7 +112,7 @@
                 <div class="col-md-12">
                     <form id="product-form" class="row g-3" enctype="multipart/form-data">
                         @csrf
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="inputName4" class="form-label">Name</label>
                             <input type="text" value="{{ $data->name }}" name="name" class="form-control"
                                 id="inputName4">
@@ -114,7 +121,7 @@
                             <input type="hidden" value="{{ $data->id }}" name="product_id" class="form-control"
                                 id="product_id">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="inputPrice4" class="form-label">Price</label>
                             <input type="number" value="{{ $data->price }}" name="price" class="form-control"
                                 id="inputPrice4">
@@ -122,10 +129,20 @@
                                 id="inputStoreId4">
                         </div>
 
+                        <div class="col-md-4 unit_of_mesu">
+                            <label for="uom" class="form-label">Unit Of Measurement</label>
+                            <select name="uom" class="form-control" id="uom">
+                                <option>Select Unit</option>
+                                <option value="kg" {{ $data->uom == 'kg' ? 'selected' : '' }}>KG</option>
+                                <option value="liter" {{ $data->uom == 'liter' ? 'selected' : '' }}>Liter</option>
+                                <option value="dozen" {{ $data->uom == 'dozen' ? 'selected' : '' }}>Dozen</option>
+                            </select>
+                        </div>
+
                         <div class="col-md-6">
-                            <label for="description"  class="form-label">Description</label>
+                            <label for="description" class="form-label">Description</label>
                             <textarea class="form-control" name="description" id="description" rows="6" placeholder="Write something here...">{{ $data->description }}</textarea>
-                          </div>
+                        </div>
 
                         <div class="col-md-6">
                             <label for="photo" class="form-label">Photo</label>
@@ -157,7 +174,6 @@
 @endsection
 
 @section('script')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
         // Preview the selected image
@@ -199,7 +215,8 @@
             var productId = $('#product_id').val(); // Assuming $data->id contains the product ID
 
             $.ajax({
-                url: '{{ route('updateProduct', ':id') }}'.replace(':id', productId), // Replace :id with actual product ID
+                url: '{{ route('updateProduct', ':id') }}'.replace(':id',
+                productId), // Replace :id with actual product ID
                 method: 'POST',
                 data: formData,
                 processData: false,
@@ -229,5 +246,12 @@
             });
 
         });
+
+        $(document).ready(function() {
+
+            // Initialize Select2
+            $('#uom').select2();
+
+        })
     </script>
 @endsection

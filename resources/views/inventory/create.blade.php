@@ -20,6 +20,14 @@
             padding-top: 5px
         }
 
+        .toast {
+            z-index: 1056 !important;
+            /* Higher than Bootstrap modals (z-index: 1055) */
+            opacity: 1 !important;
+            /* Ensure the toast is visible */
+        }
+
+
         .supplier_div .select2-selection__arrow {
             top: 5px !important;
         }
@@ -141,96 +149,129 @@
 
 @section('script')
     <script>
-        var selectedSupplier = 0;
-        // Preview the selected image
-
-
-
-        $('#back').click(function() {
-            // Redirect to the inventories.index route
-            window.location.href = '{{ route('inventories.index') }}';
-        });
-
-        $('#clear').prop('disabled', true);
-
-        $('input').on('input', function() {
-            // Check if all input fields are empty
-            let isEmpty = true; // Assume all fields are empty initially
-
-            $('input').each(function() {
-                if ($(this).val() !== '') {
-                    isEmpty = false; // If any field has a value, set isEmpty to false
-                    return false; // Exit the loop early
-                }
-            });
-
-            // Enable or disable the clear button based on whether all fields are empty
-            if (isEmpty) {
-                $('#clear').prop('disabled', true); // Disable the clear button if all fields are empty
-            } else {
-                $('#clear').prop('disabled', false); // Enable the clear button if any field has a value
-            }
-        });
-
-
-
-
-
-
-        // Submit form via AJAX
-        $('#inventory-form').submit(function(e) {
-            e.preventDefault(); // Prevent the default form submission
-
-            var formData = new FormData(this); // Create a FormData object
-
-            $.ajax({
-                url: '{{ route('inventories.store') }}', // URL to send the form data
-                method: 'POST',
-                data: formData,
-                processData: false, // Required for file uploads
-                contentType: false, // Required for file uploads
-                success: function(response) {
-                    // Clear the form after successful submission
-                    setTimeout(function() {
-                        toastr.success(response.message); // Display success toast
-                        location.reload(); // This reloads the page
-                    }, 1000);
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status === 422) {
-                        // Validation error
-                        var errors = xhr.responseJSON.errors; // Extract errors from response
-
-                        // Loop through the errors and show each one in a Toastr error
-                        $.each(errors, function(key, messages) {
-                            messages.forEach(function(message) {
-                                toastr.error(message); // Show error message
-                            });
-                        });
-                    } else {
-                        // Handle other errors
-                        toastr.error('An unexpected error occurred. Please try again.');
-                    }
-                }
-            });
-        });
-
-
-
         $(document).ready(function() {
-            var selectedSupplier = ''; // Initialize the selected supplier variable
+            let allProducts = []; // Store all products fetched from the API
+            let selectedProducts = []; // Store selected products for each row
 
-            // Initialize Select2
-            $('select').select2();
+            // Function to fetch product data via AJAX
+            function productData() {
+                $.ajax({
+                    url: '{{ route('productData') }}',
+                    method: 'GET',
+                    success: function(response) {
+                        if (Array.isArray(response.data)) {
+                            allProducts = response.data; // Save fetched products
+                            updateProductDropdowns(); // Update all existing dropdowns
+                        } else {
+                            toastr.error('Product data is invalid or missing.');
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Failed to fetch product data. Please try again.');
+                    }
+                });
+            }
 
-            // Function to fetch supplier data via AJAX
+            // Function to update the dropdown options in all rows
+            function updateProductDropdowns() {
+                const rows = $("#inventory_table tbody tr");
+                rows.each(function() {
+                    const currentDropdown = $(this).find('select[name="product_id[]"]');
+                    const selectedValue = currentDropdown.val(); // Preserve current selection
+                    populateDropdown(currentDropdown, selectedValue);
+                });
+            }
+
+            // Function to populate a dropdown with products, excluding selected products
+            function populateDropdown(dropdown, selectedValue) {
+
+                allProducts.forEach(product => {
+                    if (!selectedProducts.includes(product.id) || product.id === selectedValue) {
+                        dropdown.append(`<option value="${product.id}">${product.name}</option>`);
+                    }
+                });
+
+                dropdown.val(selectedValue); // Restore the previous selection if available
+            }
+
+            // Handle product selection changes
+            $('#inventory_table').on('change', 'select[name="product_id[]"]', function() {
+                const selectedValue = $(this).val();
+
+                // Update selected products list
+                selectedProducts = [];
+                $('#inventory_table select[name="product_id[]"]').each(function() {
+                    const value = $(this).val();
+                    if (value) selectedProducts.push(value);
+                });
+
+                updateProductDropdowns(); // Refresh dropdowns
+            });
+
+            // Add a new row
+            $(".add_row").on("click", function() {
+                const newRow = `
+            <tr>
+                <td>
+                    <select class="form-control product_id" name="product_id[]">
+                        <option>Select Product</option>
+                    </select>
+                </td>
+                <td>
+                    <input class="form-control" name="qty[]">
+                </td>
+                <td>
+                    <input class="form-control" name="price[]">
+                </td>
+                <td>
+                    <input class="form-control" disabled name="gross_value[]">
+                </td>
+                <td>
+                    <input class="form-control" name="discount[]">
+                </td>
+                <td>
+                    <input class="form-control" name="total[]">
+                </td>
+                <td>
+                    <input type="button" class="text-light btn btn-danger btn-xs remove_row" value="-">
+                </td>
+            </tr>
+        `;
+                $("#inventory_table tbody").append(newRow);
+
+                const newDropdown = $("#inventory_table tbody tr:last select[name='product_id[]']");
+                populateDropdown(newDropdown, null); // Populate the new dropdown
+                newDropdown.select2(); // Reinitialize Select2 for the new dropdown
+            });
+
+            // Remove a row
+            $("#inventory_table tbody").on("click", ".remove_row", function() {
+                const totalRows = $("#inventory_table tbody tr").length; // Count rows
+
+                if (totalRows === 1) {
+                    // Display an alert if trying to delete the last row
+                    toastr.error("Cannot delete the last row.");
+                    return; // Exit without deleting
+                }
+
+                const row = $(this).closest("tr");
+                const removedValue = row.find('select[name="product_id[]"]').val();
+                row.remove();
+
+                if (removedValue) {
+                    // Remove the deselected product from the selected list
+                    selectedProducts = selectedProducts.filter(id => id !== removedValue);
+                    updateProductDropdowns(); // Refresh dropdowns
+                }
+            });
+
+
+            // Fetch supplier data (already included in your code)
             function supplierData() {
                 $.ajax({
                     url: '{{ route('supplierData') }}',
                     method: 'GET',
                     success: function(response) {
-                        console.log(response); // Log the response to check its structure
-
                         if (Array.isArray(response.data)) {
                             $('#supplier_id').empty();
                             $('#supplier_id').append('<option value="">Select Supplier</option>');
@@ -238,8 +279,9 @@
                                 '<option value="add_new">Add New Supplier</option>');
 
                             response.data.forEach(function(supplier) {
-                                $('#supplier_id').append('<option value="' + supplier.id +
-                                    '">' + supplier.name + '</option>');
+                                $('#supplier_id').append(
+                                    `<option value="${supplier.id}">${supplier.name}</option>`
+                                    );
                             });
 
                             $('#supplier_id').select2();
@@ -247,190 +289,26 @@
                             toastr.error('Suppliers data is invalid or missing.');
                         }
                     },
-                    error: function(xhr, status, error) {
+                    error: function() {
                         toastr.error('Failed to fetch suppliers. Please try again.');
                     }
                 });
             }
 
-            // Call the function immediately after the page loads
-            supplierData();
-
+            // Handle supplier modal display
             $('#supplier_id').on('change', function() {
-                var selectedValue = $(this).val();
+                const selectedValue = $(this).val();
                 if (selectedValue === 'add_new') {
                     $('#supplierModal').modal('show');
-                } else {
-                    selectedSupplier = selectedValue;
                 }
             });
 
-            // Submit form via AJAX to add a new supplier
-            $('#supplier-form').submit(function(e) {
-                e.preventDefault(); // Prevent the default form submission
+            // Initialize the page
+            supplierData(); // Fetch supplier data
+            productData(); // Fetch product data
 
-                var formData = new FormData(this); // Create a FormData object
+            $('select').select2();
 
-                $.ajax({
-                    url: '{{ route('suppliers.store') }}',
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        toastr.success("Supplier successfully added");
-                        $('#supplierModal').modal('hide');
-                        $('#supplier-form')[0].reset();
-
-                        $('#supplier_id').append(
-                            $('<option>', {
-                                value: response.supplier.id,
-                                text: response.supplier.name
-                            })
-                        );
-
-                        $('#supplier_id').val(response.supplier.id);
-                        $('#inputName4').val(response.supplier.name);
-                        $('#inputPhone4').val(response.supplier.phone);
-
-                        selectedSupplier = response.supplier.id;
-                    },
-                    error: function(xhr, status, error) {
-                        if (xhr.status === 422) {
-                            var errors = xhr.responseJSON.errors;
-                            $.each(errors, function(key, messages) {
-                                messages.forEach(function(message) {
-                                    toastr.error(message);
-                                });
-                            });
-                        } else {
-                            toastr.error('An unexpected error occurred. Please try again.');
-                        }
-                    }
-                });
-            });
-
-            // Close the supplier modal and reset selected supplier value
-            $('#supplier_close_btn, #btn_close').on('click', function() {
-                // Check if selectedSupplier is valid and set value accordingly
-                if (selectedSupplier !== '' && selectedSupplier !== 0) {
-                    $('#supplier_id').val(selectedSupplier);
-                    $('#supplier_id').trigger('change');
-                } else {
-                    $('#supplier_id').val('');
-                    $('#supplier_id').trigger('change');
-                }
-
-                // Get the Bootstrap Modal instance and hide it
-                var supplierModal = new bootstrap.Modal(document.getElementById('supplierModal'));
-                if (supplierModal) {
-                    supplierModal.hide(); // This will hide the modal and manage the backdrop correctly
-                }
-            });
-
-
-            // Show reset modal when clear button is clicked
-            $('#clear').on('click', function(e) {
-                e.preventDefault();
-                var supplierModal = new bootstrap.Modal(document.getElementById('supplierModal'));
-                var supplierResetModal = new bootstrap.Modal(document.getElementById('supplierResetModal'));
-
-                // Show the reset modal and hide the supplier modal
-                supplierResetModal.show();
-                // supplierModal.hide(); // Hide the supplier modal if it's open
-            });
-
-            // Handle form reset on confirmation from reset modal
-            $('#confirm-clear').on('click', function() {
-    $('#supplier-form')[0].reset(); // Reset the form
-    removeImage(); // Remove any image preview
-
-    // Get the instances of both modals
-    var supplierResetModal = bootstrap.Modal.getInstance(document.getElementById('supplierResetModal'));
-    var supplierModal = bootstrap.Modal.getInstance(document.getElementById('supplierModal'));
-
-    // Close the reset modal and show the main supplier modal
-    if (supplierResetModal) {
-        supplierResetModal.hide(); // Close the reset modal
-    }
-
-    // Ensure the backdrop of the reset modal is hidden
-    document.body.classList.remove('modal-open'); // Manually remove the modal-open class
-    document.querySelector('.modal-backdrop').classList.remove('show'); // Remove the backdrop element
-
-    // Show the supplier modal
-    if (supplierModal) {
-        supplierModal.show(); // Open the supplier modal
-    }
-});
-
-$('#supplierResetModalCloseBtn').on('click', function() {
-    var supplierResetModal = bootstrap.Modal.getInstance(document.getElementById('supplierResetModal'));
-    var supplierModal = bootstrap.Modal.getInstance(document.getElementById('supplierModal'));
-
-    if (supplierResetModal) {
-        supplierResetModal.hide(); // Correctly close the supplierResetModal
-    }
-
-    // Ensure the backdrop of the reset modal is hidden
-    document.body.classList.remove('modal-open'); // Remove the modal-open class from body
-    document.querySelector('.modal-backdrop').classList.remove('show'); // Remove the backdrop of the previous modal
-
-    if (supplierModal) {
-        supplierModal.show(); // Show the supplier modal
-    }
-});
-
-        });
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const tableBody = document.querySelector("#inventory_table tbody");
-
-            // Add Row
-            document.querySelector(".add_row").addEventListener("click", function() {
-                const newRow = `
-        <tr>
-          <td>
-            <select class="form-control" name="product_id[]">
-              <option>Select Product</option>
-            </select>
-          </td>
-          <td>
-            <input class="form-control" name="qty[]">
-          </td>
-          <td>
-            <input class="form-control" name="price[]">
-          </td>
-          <td>
-            <input class="form-control" disabled name="gross_value[]">
-          </td>
-          <td>
-            <input class="form-control" name="discount[]">
-          </td>
-          <td>
-            <input class="form-control" name="total[]">
-          </td>
-          <td>
-            <input type="button" class="text-light btn btn-danger btn-xs remove_row" value="-">
-          </td>
-        </tr>
-      `;
-
-                // Append new row to table body
-                tableBody.insertAdjacentHTML("beforeend", newRow);
-                $('select').select2();
-
-            });
-
-            // Remove Row
-            tableBody.addEventListener("click", function(e) {
-                if (e.target && e.target.classList.contains("remove_row")) {
-                    const row = e.target.closest("tr");
-                    if (row) row.remove();
-                }
-            });
         });
     </script>
 
