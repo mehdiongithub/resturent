@@ -18,8 +18,8 @@ class UserSeeder extends Seeder
             'name' => 'John Doe', // Change to desired name
             'email' => 'admin@gmail.com', // Change to desired email
             'password' => Hash::make('rootroot'), // Password (hashed)
-            'company_id' => '0e7eb4c8-a80f-11ef-9cc0-f1ae94da8b26', 
-            'store_id' => '55d68680-a80f-11ef-9cc0-f1ae94da8b26', 
+            'company_id' => 'b453ad08-a981-11ef-928a-7a09bb93aba3', 
+            'store_id' => 'c6d190b4-a981-11ef-928a-7a09bb93aba3', 
         ]);
 
     }

@@ -16,6 +16,7 @@ class Product extends Model
         'description',
         'company_id',
         'store_id',
+        'uom',
     ];
 
     public function company()

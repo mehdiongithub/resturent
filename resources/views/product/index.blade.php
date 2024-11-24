@@ -54,6 +54,7 @@ button.action-icon:hover i {
                     <tr>
                       <th>S:No</th>
                       <th>Name</th>
+                      <th>Uom</th>
                       <th>Price</th>
                       <th>Action</th>
                     </tr>
@@ -65,6 +66,7 @@ button.action-icon:hover i {
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $product->name }}</td>
+                            <td>{{ $product->uom }}</td>
                             <td>{{ $product->price }}</td>
                             <td>
                                 <!-- Show Link with Icon and Text -->
@@ -109,7 +111,7 @@ button.action-icon:hover i {
       $("#basic-datatables").DataTable({
         "columnDefs": [
           {
-            "targets": 3, // Disable sorting for the 'Action' column (index 4)
+            "targets": 4, // Disable sorting for the 'Action' column (index 4)
             "orderable": false
           }
         ]
