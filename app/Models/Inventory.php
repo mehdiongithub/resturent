@@ -19,7 +19,7 @@ class Inventory extends Model
         'store_id',
         'discount',
         'total_price',
-        'inventery_date',
+        'inventory_date',
     ];
 
     public function company()

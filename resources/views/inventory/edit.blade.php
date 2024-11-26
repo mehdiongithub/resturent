@@ -36,10 +36,6 @@
             height: 40px;
         }
 
-        p{
-            font-size: 10px !important;
-        }
-
 
         #inventory_table tbody .select2-container .select2-selection--single {
             height: 30px !important;
@@ -64,6 +60,10 @@
             font-weight: 400 !important;
         }
 
+        p {
+            font-size: 10px !important;
+        }
+
         table thead th,
         table tbody td,
         table tfoot th {
@@ -76,11 +76,15 @@
 @section('content')
     @include('inventory.inventory_reset_modal');
     @include('inventory.supplier_modal');
+    <script>
+        var selectedValueSupplier = @json($data->supplier_id);
+        var purchase_items = @json($data->items);
+    </script>
 
     <div class="container">
         <div class="page-inner">
             <div class="page-header d-flex justify-content-between align-items-center">
-                <h3 class="fw-bold mb-3" style=" font-size: 20px !important;">Create inventory</h3>
+                <h3 class="fw-bold mb-3" style=" font-size: 20px !important;">Show inventory</h3>
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -98,7 +102,8 @@
                         <div class="col-md-4"></div>
                         <div class="col-md-4">
                             <label for="date" class="form-label">Invoice Date</label>
-                            <input type="text" name="date" class="form-control" id="date">
+                            <input type="text" value="{{ $data->inventory_date }}" name="date"
+                                class="form-control" id="date">
                             <input type="hidden" value="{{ getUserStoreId() }}" name="store_id" class="form-control"
                                 id="inputStoreId4">
                         </div>
@@ -121,83 +126,87 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @forEach($data->items as $item)
                                     <tr>
                                         <td>
-                                            <select class="form-control  product_id" id="product_id" name="product_id[]">
-                                                {{-- <option>Select Product</option> --}}
+                                            <select class="form-control  product_id" name="product_id[]">
+                                                <option value="{{$item->product->id}}">{{$item->product->name}}</option>
                                             </select>
                                         </td>
                                         <td>
-                                            <input class="form-control qty" id="qty" name="qty[]">
+                                            <input class="form-control qty" value="{{$item->quantity}}" id="qty" name="qty[]">
                                         </td>
                                         <td>
-                                            <select class="form-control weight" id="weight" name="weight[]">
+                                            <select class="form-control weight" name="weight[]">
                                                 <option value="">Select Weight</option>
-                                                <option value="kg">kg</option>
-                                                <option value="g">g</option>
-                                                <option value="liter">liter</option>
-                                                <option value="ml">ml</option>
-                                                <option value="dozen">dozen</option>
-                                                <option value="unit">unit</option>
+                                                <option {{ $item->uom == 'kg' ? 'selected' : '' }} value="kg">kg</option>
+                                                <option {{ $item->uom == 'g' ? 'selected' : '' }} value="g">g</option>
+                                                <option {{ $item->uom == 'liter' ? 'selected' : '' }} value="liter">liter</option>
+                                                <option {{ $item->uom == 'ml' ? 'selected' : '' }} value="ml">ml</option>
+                                                <option {{ $item->uom == 'dozen' ? 'selected' : '' }}  value="dozen">dozen</option>
+                                                <option {{ $item->uom == 'unit' ? 'selected' : '' }}  value="unit">unit</option>
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="number" class="form-control price" id="price" name="price[]">
+                                            <input type="number" value="{{$item->price}}" class="form-control price" id="price" name="price[]">
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control expiry" id="expiry" name="expiry_date[]">
+                                            <input type="text" value="{{$item->expiry_date}}"  class="form-control expiry" id="expiry"
+                                                name="expiry_date[]">
                                         </td>
                                         <td>
-                                            <input class="form-control gross_value" disabled id="gross_value"
+                                            <input class="form-control gross_value" disabled value="{{$item->quantity * $item->price}}" id="gross_value"
                                                 name="gross_value[]">
                                         </td>
                                         <td>
-                                            <input class="form-control discount" id="discount" name="discount[]">
+                                            <input class="form-control discount" value="{{$item->discount}}" id="discount" name="discount[]">
                                         </td>
                                         <td>
-                                            <input class="form-control total" id="total" name="total[]">
+                                            <input class="form-control total" value="{{$item->total_price}}" id="total" name="total[]">
                                         </td>
                                         <td>
                                             <input type="button" class="text-light btn btn-danger btn-xs remove_row"
                                                 value="-">
                                         </td>
                                     </tr>
+                                    @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th>
-                                         </th>
+                                        </th>
                                         <th>
                                             Total Qty
                                         </th>
+                                        <th></th>
                                         <th colspan="2" style="text-align: center"></th>
-                                        <th colspan="1" style="text-align: center">Total Value</th>
+                                        <th colspan="1"  style="text-align: center">Total Value</th>
                                         <th colspan="1" style="text-align: center">Total discount</th>
-                                        <th style="text-align: center">Pay Amount</th>
+                                        <th style="text-align: center">Total Amount</th>
                                         <th></th>
                                     </tr>
                                     <tr>
                                         <th colspan="1"></th>
                                         <th colspan="1">
-                                            <p id="para_total_qty"></p>
-                                            <input hidden type="number" name="total_qty" placeholder="0"
+                                            <p id="para_total_qty">{{$data->quantity}}</p>
+                                            <input hidden value="{{$data->quantity}}" type="number" name="total_qty" placeholder="0"
                                                 class="form-control total_qty_cls" id="footer_total_qty" readonly>
                                         </th>
                                         <th colspan="3"></th>
                                         <th style="text-align: right">
-                                            <p id="para_gross_value"></p>
-                                            <input hidden type="number"  name="gross_value" placeholder="0"
+                                            <p id="para_gross_value">{{$data->amount}}</p>
+                                            <input hidden type="number" value="{{$data->amount}}" name="gross_value" placeholder="0"
                                                 class="form-control purchase_gross_value_cls"
                                                 id="footer_purchase_gross_value" readonly>
                                         </th>
                                         <th colspan="1" style="text-align: center">
-                                            <p id="para_total_discount"></p>
-                                            <input hidden type="number" name="total_discount" placeholder="0"
+                                            <p id="para_total_discount">{{$data->discount}}</p>
+                                            <input hidden type="number" value="{{$data->discount}}" name="total_discount" placeholder="0"
                                                 class="form-control total_discount_cls" id="footer_discount" readonly>
                                         </th>
                                         <th style="text-align: right">
-                                            <p id="para_total_price"></p>
-                                            <input hidden type="number" name="total_net_value" placeholder="0"
+                                            <p id="para_total_price">{{$data->total_price}}</p>
+                                            <input hidden type="number" value="{{$data->total_price}}" name="total_net_value" placeholder="0"
                                                 class="form-control total_net_value_cls" id="total_net_value" readonly>
                                         </th>
                                     </tr>
@@ -206,16 +215,8 @@
                             </table>
                         </div>
 
-
-
-
                         <div class="col-md-12 d-flex justify-content-end">
                             <input type="button" value="Back" class="btn btn-success btn-sm ms-2" id="back">
-                            <button id="clear" type="button" class="btn btn-danger btn-sm ms-2"
-                                data-bs-toggle="modal" data-bs-target="#resetModal" data-form-id="inventory-form">
-                                Clear
-                            </button>
-                            <input type="submit" value="Submit" class="btn btn-primary  btn-sm ms-2" id="submit">
                         </div>
 
                     </form>
@@ -228,9 +229,22 @@
 @section('script')
     <script>
         let selectedSupplierVal = '';
+        let pageReload = true;
+        console.log('this is value of purchase_items',purchase_items);
         $(document).ready(function() {
+            $('select').select2();
+
             let allProducts = []; // Store all products fetched from the API
             let selectedProducts = []; // Store selected products for each row
+
+            if(pageReload){
+                purchase_items.forEach(item => {
+                    selectedProducts.push(item.product_id);
+                });
+
+                pageReload = false;
+
+            }
 
             // Function to fetch product data via AJAX
             function productData() {
@@ -287,30 +301,31 @@
             }
 
             $('#back').click(function() {
-            // Redirect to the products.index route
+                // Redirect to the products.index route
                 window.location.href = '{{ route('inventories.index') }}';
             });
 
 
 
             // Handle product selection changes
-            // Handle product selection changes
             $('#inventory_table').on('change', 'select[name="product_id[]"]', function() {
                 const row = $(this).closest('tr');
                 const priceInput = row.find('.price');
-                
+
                 const selectedValue = $(this).val();
                 if (selectedValue) {
                     $.ajax({
-                        url: '{{ url('getSpecific') }}/' + selectedValue, // Dynamic URL to fetch product data
+                        url: '{{ url('getSpecific') }}/' +
+                        selectedValue, // Dynamic URL to fetch product data
                         method: 'GET',
                         success: function(response) {
                             if (response.data) {
                                 console.log('Selected Product:', response.data);
-                             
+
                                 if (priceInput.length >= 0) {
                                     console.log('Setting price value:', response.data.price);
-                                    priceInput.val(parseFloat(response.data.price) || 0); // Set the price input value
+                                    priceInput.val(parseFloat(response.data.price) ||
+                                    0); // Set the price input value
                                 } else {
                                     console.log('Price input not found!');
                                 }
@@ -420,7 +435,7 @@
 
             // Fetch supplier data (already included in your code)
 
-            function supplierData() {
+            function supplierData(selectedSupplier = null) {
                 $.ajax({
                     url: '{{ route('supplierData') }}',
                     method: 'GET',
@@ -429,15 +444,22 @@
                             $('#supplier_id').empty();
                             $('#supplier_id').append('<option value="">Select Supplier</option>');
                             $('#supplier_id').append(
-                                '<option value="add_new">Add New Supplier</option>');
+                                '<option value="add_new">Add New Supplier</option>'
+                            );
 
+                            // Loop through the suppliers and populate the dropdown
                             response.data.forEach(function(supplier) {
                                 $('#supplier_id').append(
-                                    `<option value="${supplier.id}">${supplier.name}</option>`
+                                    `<option value="${supplier.id}" ${selectedSupplier && supplier.id === selectedSupplier ? 'selected' : ''}>${supplier.name}</option>`
                                 );
                             });
 
                             $('#supplier_id').select2();
+                            
+                            // If selectedSupplier is passed, set the selected value after the options are populated
+                            if (selectedSupplier) {
+                                $('#supplier_id').val(selectedSupplier).trigger('change');
+                            }
                         } else {
                             toastr.error('Suppliers data is invalid or missing.');
                         }
@@ -448,133 +470,122 @@
                 });
             }
 
-            // Handle supplier modal display
-            $('#supplier_id').on('change', function() {
-                const selectedValue = $(this).val();
-                if (selectedValue === 'add_new') {
-                    $('#supplierModal').modal('show');
-                }
-            });
+            // Initialize the page with selectedSupplier if available
+            var selectedSupplier =
+            @json($data->supplier_id); // Assuming the selected supplier is available in the server-side data
+            supplierData(selectedSupplier); // Fetch supplier data and set selected value
 
-            // Initialize the page
-            supplierData(); // Fetch supplier data
             productData(); // Fetch product data
 
             $('select').select2();
 
             $('body').on('input', '.qty, .price, .discount', function() {
-    let row = $(this).closest('tr');
-    updateRowValues(row); // Call the calculation function for this row
-});
-
-$('body').on('change', '.weight', function() {
-    let row = $(this).closest('tr');
-    updateRowValues(row); // Call the calculation function when weight is changed
-    
-});
-
-function updateRowValues(row) {
-    let qty = row.find('.qty').val();
-    let price = row.find('.price').val();
-    let weight = row.find('.weight').val();
-    let discount = row.find('.discount').val();
-    let grossValue = 0;
-    let netValue = 0;
-    let discountValue = 0;
-    
-    if (weight == 'g' || weight == 'ml') {
-        grossValue = qty * price / 1000;
-        discountValue = discount;
-        netValue = grossValue - discountValue;
-    } else if (weight == 'unit') {
-        grossValue = qty * price / 12;
-        discountValue = discount;
-        netValue = grossValue - discountValue;
-    } else {
-        grossValue = qty * price;
-        discountValue = discount;
-        netValue = grossValue - discountValue;
-    }
-
-    row.find('.gross_value').val(grossValue.toFixed(2));
-    row.find('.total').val(netValue.toFixed(2));
-
-    updateFooterValues(); // Update footer totals after calculation
-}
-
-function updateFooterValues() {
-    let totalQty = 0;
-    let totalGrossValue = 0;
-    let totalDiscount = 0;
-    let totalNetValue = 0;
-
-    $('#inventory_table tbody tr').each(function(index) {
-        const qty = parseFloat($(this).find('.qty').val()) || 0;
-        const gross_value = parseFloat($(this).find('.gross_value').val()) || 0;
-        const total = parseFloat($(this).find('.total').val()) || 0;
-        const discount = parseFloat($(this).find('.discount').val()) || 0;
-
-        if (qty > 0) {
-        totalQty++; // Increment the count of rows with non-zero qty
-    }
-        totalGrossValue += gross_value;
-        totalDiscount += discount;
-        totalNetValue += total;
-    });
-
-    $('#footer_total_qty').val(totalQty);
-    $('#para_total_qty').text(totalQty);
-    $('#footer_purchase_gross_value').val(totalGrossValue);
-    $('#para_gross_value').text(totalGrossValue);
-    $('#footer_discount').val(totalDiscount);
-    $('#para_total_discount').text(totalDiscount);
-    $('#total_net_value').val(totalNetValue);
-    $('#para_total_price').text(totalNetValue);
-}
-
-
-        $('#inventory-form').submit(function(e) {
-            e.preventDefault(); // Prevent the default form submission
-
-            var formData = new FormData(this); // Create a FormData object
-
-            $.ajax({
-                url: '{{ route('inventories.store') }}', // URL to send the form data
-                method: 'POST',
-                data: formData,
-                processData: false, // Required for file uploads
-                contentType: false, // Required for file uploads
-                success: function(response) {
-                    // Clear the form after successful submission
-                    setTimeout(function() {
-                        toastr.success(response.message); // Display success toast
-                        location.reload(); // This reloads the page
-                    }, 1000);
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status === 422) {
-                        // Validation error
-                        var errors = xhr.responseJSON.errors; // Extract errors from response
-
-                        // Loop through the errors and show each one in a Toastr error
-                        $.each(errors, function(key, messages) {
-                            messages.forEach(function(message) {
-                                toastr.error(message); // Show error message
-                            });
-                        });
-                    } else {
-                        // Handle other errors
-                        toastr.error('An unexpected error occurred. Please try again.');
-                    }
-                }
+                let row = $(this).closest('tr');
+                updateRowValues(row); // Call the calculation function for this row
             });
-        });
+
+            $('body').on('change', '.weight', function() {
+                let row = $(this).closest('tr');
+                updateRowValues(row); // Call the calculation function when weight is changed
+
+            });
+
+            function updateRowValues(row) {
+                let qty = row.find('.qty').val();
+                let price = row.find('.price').val();
+                let weight = row.find('.weight').val();
+                let discount = row.find('.discount').val();
+                let grossValue = 0;
+                let netValue = 0;
+                let discountValue = 0;
+
+                if (weight == 'g' || weight == 'ml') {
+                    grossValue = qty * price / 1000;
+                    discountValue = discount;
+                    netValue = grossValue - discountValue;
+                } else if (weight == 'unit') {
+                    grossValue = qty * price / 12;
+                    discountValue = discount;
+                    netValue = grossValue - discountValue;
+                } else {
+                    grossValue = qty * price;
+                    discountValue = discount;
+                    netValue = grossValue - discountValue;
+                }
+
+                row.find('.gross_value').val(grossValue.toFixed(2));
+                row.find('.total').val(netValue.toFixed(2));
+
+                updateFooterValues(); // Update footer totals after calculation
+            }
+
+            function updateFooterValues() {
+                let totalQty = 0;
+                let totalGrossValue = 0;
+                let totalDiscount = 0;
+                let totalNetValue = 0;
+
+                $('#inventory_table tbody tr').each(function(index) {
+                    const qty = parseFloat($(this).find('.qty').val()) || 0;
+                    const gross_value = parseFloat($(this).find('.gross_value').val()) || 0;
+                    const total = parseFloat($(this).find('.total').val()) || 0;
+                    const discount = parseFloat($(this).find('.discount').val()) || 0;
+
+                    if (qty > 0) {
+                        totalQty++; // Increment the count of rows with non-zero qty
+                    }
+                    totalGrossValue += gross_value;
+                    totalDiscount += discount;
+                    totalNetValue += total;
+                });
+
+                $('#footer_total_qty').val(totalQty);
+                $('#footer_purchase_gross_value').val(totalGrossValue);
+                $('#footer_discount').val(totalDiscount);
+                $('#total_net_value').val(totalNetValue);
+            }
+
+
+            $('#inventory-form').submit(function(e) {
+                e.preventDefault(); // Prevent the default form submission
+
+                var formData = new FormData(this); // Create a FormData object
+
+                $.ajax({
+                    url: '{{ route('inventories.store') }}', // URL to send the form data
+                    method: 'POST',
+                    data: formData,
+                    processData: false, // Required for file uploads
+                    contentType: false, // Required for file uploads
+                    success: function(response) {
+                        // Clear the form after successful submission
+                        setTimeout(function() {
+                            toastr.success(response.message); // Display success toast
+                            location.reload(); // This reloads the page
+                        }, 1000);
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 422) {
+                            // Validation error
+                            var errors = xhr.responseJSON
+                            .errors; // Extract errors from response
+
+                            // Loop through the errors and show each one in a Toastr error
+                            $.each(errors, function(key, messages) {
+                                messages.forEach(function(message) {
+                                    toastr.error(message); // Show error message
+                                });
+                            });
+                        } else {
+                            // Handle other errors
+                            toastr.error('An unexpected error occurred. Please try again.');
+                        }
+                    }
+                });
+            });
 
 
         });
-
-        
-
     </script>
 
 

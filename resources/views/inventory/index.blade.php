@@ -74,7 +74,6 @@ button.action-icon:hover i {
                             <td>{{ $inventory->amount }}</td>
                             <td>{{ $inventory->discount }}</td>
                             <td>{{ $inventory->total_price }}</td>
-                            <td>{{ $inventory->price }}</td>
                             <td>
                                 <!-- Show Link with Icon and Text -->
                                 <a href="{{ route('inventories.show', $inventory->id) }}" class="action-icon">

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->decimal('discount', 10, 2);
             $table->decimal('total_price', 10, 2);
-            $table->date('inventery_date');
+            $table->date('inventory_date');
             $table->timestamps(); // Includes created_at and updated_at
             $table->softDeletes(); // Adds the deleted_at column for soft deletes
 

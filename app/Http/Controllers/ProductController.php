@@ -71,6 +71,25 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
+
+     public function getSpecificProduct(string $id)
+{
+    $companyId = getUserCompanyId();
+    $storeId = getUserStoreId();
+
+    // Use first() to get a single record instead of get()
+    $data = Product::where('id', $id)
+        ->where('company_id', $companyId)
+        ->where('store_id', $storeId)
+        ->first(); // Retrieves a single product
+
+    // If no product found, return 404 or an appropriate response
+    return response()->json([
+        'data' => $data
+    ],200);
+}
+
+
     public function show(string $id)
 {
     $companyId = getUserCompanyId();

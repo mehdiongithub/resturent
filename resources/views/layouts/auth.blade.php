@@ -888,6 +888,13 @@ document.addEventListener('DOMContentLoaded', function () {
         instance.input.value = dateStr; // Ensure input has the default value
       }
     });
+
+    flatpickr(".expiry", {
+    dateFormat: "Y-m-d", // Format the date (optional)
+    minDate: "today", // Optionally, prevent selecting past dates
+    locale: "en", // Set locale for the calendar
+});
+
   });
 
 

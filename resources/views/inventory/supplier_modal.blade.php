@@ -202,6 +202,7 @@
   // Image preview logic here...
 
   // The new JavaScript logic to disable/enable inputs
+  let = selectedSupplier = '';
   function disableSupplierModalInputs() {
     const inputs = document.querySelectorAll("#supplier-form input, #supplier-form select, #supplier-form textarea");
     inputs.forEach(input => {
@@ -292,7 +293,7 @@
             $('#supplier_close_btn, #btn_close').on('click', function() {
                 console.log("Closing supplier modal...");
 
-                if (selectedSupplier !== '' && selectedSupplier !== 0) {
+                if (selectedSupplier !== '') {
                     $('#supplier_id').val(selectedSupplier);
                     $('#supplier_id').trigger('change');
                 } else {
