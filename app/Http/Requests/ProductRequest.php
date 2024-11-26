@@ -28,6 +28,7 @@ class ProductRequest extends FormRequest
             'store_id' => "required",
             'uom' => "required",
             'description' => "nullable",
+            'product_type' => "nullable",
         ];
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->uuid('store_id');
             $table->string('name', 255);
             $table->enum('uom', ['liter', 'kg','dozen']);
+            $table->enum('product_type', ['long_term', 'short_term']);
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->timestamps(); // Includes created_at and updated_at

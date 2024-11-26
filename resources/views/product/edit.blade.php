@@ -112,7 +112,7 @@
                 <div class="col-md-12">
                     <form id="product-form" class="row g-3" enctype="multipart/form-data">
                         @csrf
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="inputName4" class="form-label">Name</label>
                             <input type="text" value="{{ $data->name }}" name="name" class="form-control"
                                 id="inputName4">
@@ -121,7 +121,7 @@
                             <input type="hidden" value="{{ $data->id }}" name="product_id" class="form-control"
                                 id="product_id">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="inputPrice4" class="form-label">Price</label>
                             <input type="number" value="{{ $data->price }}" name="price" class="form-control"
                                 id="inputPrice4">
@@ -129,13 +129,22 @@
                                 id="inputStoreId4">
                         </div>
 
-                        <div class="col-md-4 unit_of_mesu">
+                        <div class="col-md-6 unit_of_mesu">
                             <label for="uom" class="form-label">Unit Of Measurement</label>
                             <select name="uom" class="form-control" id="uom">
                                 <option>Select Unit</option>
                                 <option value="kg" {{ $data->uom == 'kg' ? 'selected' : '' }}>KG</option>
                                 <option value="liter" {{ $data->uom == 'liter' ? 'selected' : '' }}>Liter</option>
                                 <option value="dozen" {{ $data->uom == 'dozen' ? 'selected' : '' }}>Dozen</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 unit_of_mesu">
+                            <label for="product_type" class="form-label">Unit Of Measurement</label>
+                            <select name="product_type" class="form-control" id="product_type">
+                                <option>Select Product Type</option>
+                                <option {{ $data->product_type == 'long_term' ? 'selected' : '' }} value="long_term">Long Term</option>
+                                <option {{ $data->product_type == 'short_term' ? 'selected' : '' }} value="short_term">Short Term</option>
                             </select>
                         </div>
 
@@ -251,7 +260,7 @@
 
             // Initialize Select2
             $('#uom').select2();
-
+            $('#product_type').select2();
         })
     </script>
 @endsection
