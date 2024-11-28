@@ -66,7 +66,9 @@
 
         table thead th,
         table tbody td,
-        table tfoot th {
+        table tfoot th,
+        table tfoot td
+         {
             font-size: 10px !important;
             font-weight: 400 !important;
         }
@@ -79,6 +81,7 @@
     <script>
         var selectedValueSupplier = @json($data->supplier_id);
         var purchase_items = @json($data->items);
+        var purchaseInvoiceVal = @json($data);
     </script>
 
     <div class="container">
@@ -102,7 +105,7 @@
                         <div class="col-md-4"></div>
                         <div class="col-md-4">
                             <label for="date" class="form-label">Invoice Date</label>
-                            <input type="text" value="{{ $data->inventory_date }}" disabled name="date"
+                            <input type="text" value="{{ $data->invoice_date }}" disabled name="date"
                                 class="form-control" id="date">
                             <input type="hidden" value="{{ getUserStoreId() }}" name="store_id" class="form-control"
                                 id="inputStoreId4">
@@ -210,6 +213,21 @@
                                                 class="form-control total_net_value_cls" id="total_net_value" readonly>
                                         </th>
                                     </tr>
+                                    <tr>
+                                        <td colspan="6"></td>
+                                        <td colspan="1">Paid Amount</td>
+                                        <td colspan="1">
+                                            <input type="text" value="{{ optional($data->supplierAccount)->paid_amount ?? '0.00' }}" disabled class="form-control" id="amount_to_pay" name="amount_to_pay">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6"></td>
+                                        <td colspan="1">Remaining Amount</td>
+                                        <td colspan="1">
+                                            <input type="hidden" class="form-control" id="remaining_amount" name="remaining_amount">
+                                            {{ optional($data->supplierAccount)->account_balance ?? '0.00' }}
+                                        </td>
+                                    </tr>
                                 </tfoot>
 
                             </table>
@@ -229,7 +247,7 @@
 @section('script')
     <script>
         let selectedSupplierVal = '';
-        console.log('this is value of purchase_items',purchase_items);
+        console.log('this is value of purchaseInvoiceVal',purchaseInvoiceVal);
         $(document).ready(function() {
             $('select').select2();
 

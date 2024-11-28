@@ -1,6 +1,6 @@
 @extends('Layouts.auth');
 @section('title')
-Edit Supplier
+    Edit Supplier
 @endsection
 @section('style')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
@@ -109,42 +109,48 @@ Edit Supplier
                     <form id="supplier-form" class="row g-3" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
-                          <div class="col-md-9">
-                            <div class="col-md-12">
-                              <label for="inputName4" class="form-label">Name</label>
-                              <input type="text" value="{{$data->name}}" placeholder="Supplier Name" name="name" class="form-control" id="inputName4">
-                              <input type="hidden" value="{{getUserCompanyId()}}" name="company_id" class="form-control" id="inputCompanyId4">
-                              <input type="hidden" value="{{$data->id}}" name="supplier_id" class="form-control" id="supplier_id">
+                            <div class="col-md-9">
+                                <div class="col-md-12">
+                                    <label for="inputName4" class="form-label">Name</label>
+                                    <input type="text" value="{{ $data->name }}" placeholder="Supplier Name"
+                                        name="name" class="form-control" id="inputName4">
+                                    <input type="hidden" value="{{ getUserCompanyId() }}" name="company_id"
+                                        class="form-control" id="inputCompanyId4">
+                                    <input type="hidden" value="{{ $data->id }}" name="supplier_id"
+                                        class="form-control" id="supplier_id">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="inputPrice4" class="form-label">Phone No</label>
+                                    <input type="number" value="{{ $data->phone }}" name="phone"
+                                        placeholder="Supplier Phone No" class="form-control" id="inputPrice4">
+                                    <input type="hidden" value="{{ getUserStoreId() }}" name="store_id"
+                                        class="form-control" id="inputStoreId4">
+                                </div>
                             </div>
-                            <div class="col-md-12">
-                              <label for="inputPrice4" class="form-label">Phone No</label>
-                              <input type="number" value="{{$data->phone}}" name="phone" placeholder="Supplier Phone No" class="form-control" id="inputPrice4">
-                              <input type="hidden" value="{{getUserStoreId()}}" name="store_id" class="form-control" id="inputStoreId4">
-                            </div>
-                          </div>
-                          <div class="col-md-3">
-                            <div class="col-md-12">
-                                <label for="photo" class="form-label">Photo</label>
-                                <div class="photo-upload-container">
-                                    <input type="file" id="photo" name="photo" accept="image/*" class="photo-input" onchange="previewImage(event)">
-                                    <label for="photo" class="photo-select-circle">
-                                        <i class="bi bi-camera"></i> <!-- Optional: You can use an icon like a camera here -->
-                                    </label>
-                        
-                                    <div id="photo-preview" class="photo-preview" style="display: {{ $data->photo ? 'block' : 'none' }};">
-                                        <img 
-                                            id="image-preview" 
-                                            src="{{ $data->photo ? asset('storage/' . $data->photo) : '' }}" 
-                                            alt="Image Preview"
-                                        >
-                                        <button type="button" class="remove-image-btn" onclick="removeImage()">
-                                            <i class="bi bi-x"></i> <!-- Cross icon to remove image -->
-                                        </button>
+                            <div class="col-md-3">
+                                <div class="col-md-12">
+                                    <label for="photo" class="form-label">Photo</label>
+                                    <div class="photo-upload-container">
+                                        <input type="file" id="photo" name="photo" accept="image/*"
+                                            class="photo-input" onchange="previewImage(event)">
+                                        <label for="photo" class="photo-select-circle">
+                                            <i class="bi bi-camera"></i>
+                                            <!-- Optional: You can use an icon like a camera here -->
+                                        </label>
+
+                                        <div id="photo-preview" class="photo-preview"
+                                            style="display: {{ $data->photo ? 'block' : 'none' }};">
+                                            <img id="image-preview"
+                                                src="{{ $data->photo ? asset('storage/' . $data->photo) : '' }}"
+                                                alt="Image Preview">
+                                            <button type="button" class="remove-image-btn" onclick="removeImage()">
+                                                <i class="bi bi-x"></i> <!-- Cross icon to remove image -->
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
+
                         </div>
                         <div class="col-md-12 d-flex justify-content-end">
                             <input type="button" value="Back" class="btn btn-success btn-sm ms-2" id="back">
@@ -193,34 +199,57 @@ Edit Supplier
             // Redirect to the suppliers.index route
             window.location.href = '{{ route('suppliers.index') }}';
         });
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
 
-        // Submit form via AJAX
         $('#supplier-form').submit(function(e) {
             e.preventDefault(); // Prevent the default form submission
 
-            var formData = new FormData(this); // Create a FormData object
+            var $form = $(this);
+            var $submitButton = $form.find('button[type="submit"]');
+            var formData = new FormData(this);
+            var id = @json($data->id);
 
-            var supplierId = $('#supplier_id').val(); // Assuming $data->id contains the supplier ID
+            // Check if the form is currently being submitted
+            if ($form.data('submitting')) {
+                return false; // Exit if already submitting
+            }
 
+            // Mark the form as currently submitting
+            $form.data('submitting', true);
+
+            // Disable the submit button
+            $submitButton.prop('disabled', true);
+            $submitButton.addClass('is-loading');
+
+            // Add the CSRF token to the AJAX headers
             $.ajax({
-                url: '{{ route('updateSupplier', ':id') }}'.replace(':id', supplierId), // Replace :id with actual supplier ID
+                url: '{{ route('updateSupplier', ':id') }}'.replace(':id', id),
                 method: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Send CSRF token
+                    'X-CSRF-TOKEN': csrfToken
                 },
-
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.addEventListener("abort", function() {
+                        resetFormSubmission($form, $submitButton);
+                    }, false);
+                    return xhr;
+                },
+                complete: function() {
+                    // Always reset the form submission state
+                    resetFormSubmission($form, $submitButton);
+                },
                 success: function(response) {
-                    setTimeout(function() {
-                        toastr.success(response.message);
-                        window.location.href = '{{ route('suppliers.index') }}';
-                    }, 1000);
+                    toastr.success(response.message);
+                    window.location.href = '{{ route('suppliers.index') }}';
                 },
                 error: function(xhr, status, error) {
                     if (xhr.status === 422) {
+                        // Validation errors
                         var errors = xhr.responseJSON.errors;
                         $.each(errors, function(key, messages) {
                             messages.forEach(function(message) {
@@ -228,11 +257,17 @@ Edit Supplier
                             });
                         });
                     } else {
+                        // Other errors
                         toastr.error('An unexpected error occurred. Please try again.');
                     }
                 }
             });
-
         });
+
+        function resetFormSubmission($form, $submitButton) {
+            $form.data('submitting', false);
+            $submitButton.prop('disabled', false);
+            $submitButton.removeClass('is-loading');
+        }
     </script>
 @endsection

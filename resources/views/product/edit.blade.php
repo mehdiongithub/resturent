@@ -143,8 +143,10 @@
                             <label for="product_type" class="form-label">Unit Of Measurement</label>
                             <select name="product_type" class="form-control" id="product_type">
                                 <option>Select Product Type</option>
-                                <option {{ $data->product_type == 'long_term' ? 'selected' : '' }} value="long_term">Long Term</option>
-                                <option {{ $data->product_type == 'short_term' ? 'selected' : '' }} value="short_term">Short Term</option>
+                                <option {{ $data->product_type == 'long_term' ? 'selected' : '' }} value="long_term">Long
+                                    Term</option>
+                                <option {{ $data->product_type == 'short_term' ? 'selected' : '' }} value="short_term">Short
+                                    Term</option>
                             </select>
                         </div>
 
@@ -183,7 +185,6 @@
 @endsection
 
 @section('script')
-
     <script>
         // Preview the selected image
         function previewImage(event) {
@@ -216,32 +217,56 @@
 
 
         // Submit form via AJAX
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
         $('#product-form').submit(function(e) {
             e.preventDefault(); // Prevent the default form submission
 
-            var formData = new FormData(this); // Create a FormData object
+            var $form = $(this);
+            var $submitButton = $form.find('button[type="submit"]');
+            var formData = new FormData(this);
+            var id = @json($data->id);
 
-            var productId = $('#product_id').val(); // Assuming $data->id contains the product ID
+            // Check if the form is currently being submitted
+            if ($form.data('submitting')) {
+                return false; // Exit if already submitting
+            }
 
+            // Mark the form as currently submitting
+            $form.data('submitting', true);
+
+            // Disable the submit button
+            $submitButton.prop('disabled', true);
+            $submitButton.addClass('is-loading');
+
+            // Add the CSRF token to the AJAX headers
             $.ajax({
-                url: '{{ route('updateProduct', ':id') }}'.replace(':id',
-                productId), // Replace :id with actual product ID
+                url: '{{ route('updateProduct', ':id') }}'.replace(':id', id),
                 method: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Send CSRF token
+                    'X-CSRF-TOKEN': csrfToken
                 },
-
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.addEventListener("abort", function() {
+                        resetFormSubmission($form, $submitButton);
+                    }, false);
+                    return xhr;
+                },
+                complete: function() {
+                    // Always reset the form submission state
+                    resetFormSubmission($form, $submitButton);
+                },
                 success: function(response) {
-                    setTimeout(function() {
-                        toastr.success(response.message);
-                        window.location.href = '{{ route('products.index') }}';
-                    }, 1000);
+                    toastr.success(response.message);
+                    window.location.href = '{{ route('products.index') }}';
                 },
                 error: function(xhr, status, error) {
                     if (xhr.status === 422) {
+                        // Validation errors
                         var errors = xhr.responseJSON.errors;
                         $.each(errors, function(key, messages) {
                             messages.forEach(function(message) {
@@ -249,12 +274,19 @@
                             });
                         });
                     } else {
+                        // Other errors
                         toastr.error('An unexpected error occurred. Please try again.');
                     }
                 }
             });
-
         });
+
+        function resetFormSubmission($form, $submitButton) {
+            $form.data('submitting', false);
+            $submitButton.prop('disabled', false);
+            $submitButton.removeClass('is-loading');
+        }
+
 
         $(document).ready(function() {
 

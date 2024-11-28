@@ -48,5 +48,10 @@ class PurchaseInvoice extends Model
         return $this->hasMany(PurchaseInvoiceItem::class, 'purchase_invoice_id');
     }
 
+    public function supplierAccount()
+    {
+        return $this->belongsTo(SupplierAccount::class, 'inventory_id', 'inventory_id');
+    }
+
 
 }

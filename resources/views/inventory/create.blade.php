@@ -5,11 +5,11 @@
 @section('style')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
-    <!-- Include Bootstrap for styling -->
+    {{-- <!-- Include Bootstrap for styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Include Bootstrap Icons for camera icon -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"> --}}
 
     <!-- Custom CSS -->
     <style>
@@ -32,11 +32,11 @@
             top: 5px !important;
         }
 
-        input {
+        form input {
             height: 40px;
         }
 
-        p{
+        .page-inner p {
             font-size: 10px !important;
         }
 
@@ -54,19 +54,20 @@
             height: 35px;
         }
 
-        input {
+        form input {
             font-size: 10px !important;
             font-weight: 400 !important;
         }
 
-        .fw-bold {
+        .page-inner .fw-bold {
             font-size: 10px !important;
             font-weight: 400 !important;
         }
 
-        table thead th,
-        table tbody td,
-        table tfoot th {
+        .page-inner table thead th,
+        .page-inner table tbody td,
+        .page-inner table tfoot th,
+        .page-inner table tfoot td {
             font-size: 10px !important;
             font-weight: 400 !important;
         }
@@ -110,7 +111,7 @@
                                         <th style="width: 10%;">Qty</th>
                                         <th style="width: 14%;">Weight</th>
                                         <th style="width: 10%;">Price</th>
-                                        <th style="width: 10%;">expiry</th>
+                                        <th style="width: 10%;">expiry Date</th>
                                         <th style="width: 10%;">Gross Value</th>
                                         <th style="width: 10%;">Discount Value</th>
                                         <th style="width: 10%;">Net Value</th>
@@ -142,10 +143,11 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="number" class="form-control price" id="price" name="price[]">
+                                            <input type="text" class="form-control price" id="price" name="price[]">
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control expiry" id="expiry" name="expiry_date[]">
+                                            <input type="text" class="form-control expiry" id="expiry"
+                                                name="expiry_date[]">
                                         </td>
                                         <td>
                                             <input class="form-control gross_value" disabled id="gross_value"
@@ -166,40 +168,57 @@
                                 <tfoot>
                                     <tr>
                                         <th>
-                                         </th>
+                                        </th>
                                         <th>
                                             Total Qty
                                         </th>
-                                        <th colspan="2" style="text-align: center"></th>
+                                        <th colspan="3" style="text-align: center"></th>
                                         <th colspan="1" style="text-align: center">Total Value</th>
                                         <th colspan="1" style="text-align: center">Total discount</th>
-                                        <th style="text-align: center">Pay Amount</th>
+                                        <th style="text-align: center">Total Amount</th>
                                         <th></th>
                                     </tr>
                                     <tr>
                                         <th colspan="1"></th>
                                         <th colspan="1">
-                                            <p id="para_total_qty"></p>
+                                            <p id="para_total_qty">0</p>
                                             <input hidden type="number" name="total_qty" placeholder="0"
                                                 class="form-control total_qty_cls" id="footer_total_qty" readonly>
                                         </th>
                                         <th colspan="3"></th>
                                         <th style="text-align: right">
-                                            <p id="para_gross_value"></p>
-                                            <input hidden type="number"  name="gross_value" placeholder="0"
+                                            <p id="para_gross_value">0</p>
+                                            <input hidden type="number" name="gross_value" placeholder="0"
                                                 class="form-control purchase_gross_value_cls"
                                                 id="footer_purchase_gross_value" readonly>
                                         </th>
                                         <th colspan="1" style="text-align: center">
-                                            <p id="para_total_discount"></p>
+                                            <p id="para_total_discount">0</p>
                                             <input hidden type="number" name="total_discount" placeholder="0"
                                                 class="form-control total_discount_cls" id="footer_discount" readonly>
                                         </th>
                                         <th style="text-align: right">
-                                            <p id="para_total_price"></p>
+                                            <p id="para_total_price">0</p>
                                             <input hidden type="number" name="total_net_value" placeholder="0"
                                                 class="form-control total_net_value_cls" id="total_net_value" readonly>
                                         </th>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6"></td>
+                                        <td colspan="1">Paid Amount</td>
+                                        <td colspan="1">
+                                            <input type="text" class="form-control" id="amount_to_pay"
+                                                name="amount_to_pay">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6"></td>
+                                        <td colspan="1">Remaining Amount</td>
+                                        <td colspan="1">
+                                            <input type="hidden" class="form-control" id="remaining_amount"
+                                                name="remaining_amount">
+                                            <p id="remaining_amount_para">0.00</p>
+                                        </td>
                                     </tr>
                                 </tfoot>
 
@@ -287,7 +306,7 @@
             }
 
             $('#back').click(function() {
-            // Redirect to the products.index route
+                // Redirect to the products.index route
                 window.location.href = '{{ route('inventories.index') }}';
             });
 
@@ -298,19 +317,21 @@
             $('#inventory_table').on('change', 'select[name="product_id[]"]', function() {
                 const row = $(this).closest('tr');
                 const priceInput = row.find('.price');
-                
+
                 const selectedValue = $(this).val();
                 if (selectedValue) {
                     $.ajax({
-                        url: '{{ url('getSpecific') }}/' + selectedValue, // Dynamic URL to fetch product data
+                        url: '{{ url('getSpecific') }}/' +
+                            selectedValue, // Dynamic URL to fetch product data
                         method: 'GET',
                         success: function(response) {
                             if (response.data) {
                                 console.log('Selected Product:', response.data);
-                             
+
                                 if (priceInput.length >= 0) {
                                     console.log('Setting price value:', response.data.price);
-                                    priceInput.val(parseFloat(response.data.price) || 0); // Set the price input value
+                                    priceInput.val(parseFloat(response.data.price) ||
+                                        0); // Set the price input value
                                 } else {
                                     console.log('Price input not found!');
                                 }
@@ -360,7 +381,7 @@
                         </select>      
                     </td>
                     <td>
-                        <input type="number" class="form-control price" name="price[]">
+                        <input type="text" class="form-control price" name="price[]">
                     </td>
                      <td>
                         <input type="date" class="form-control expiry" name="expiry[]">
@@ -463,118 +484,188 @@
             $('select').select2();
 
             $('body').on('input', '.qty, .price, .discount', function() {
-    let row = $(this).closest('tr');
-    updateRowValues(row); // Call the calculation function for this row
-});
+                let row = $(this).closest('tr');
+                updateRowValues(row); // Call the calculation function for this row
+            });
 
-$('body').on('change', '.weight', function() {
-    let row = $(this).closest('tr');
-    updateRowValues(row); // Call the calculation function when weight is changed
-    
-});
+            $('body').on('change', '.weight', function() {
+                let row = $(this).closest('tr');
+                updateRowValues(row); // Call the calculation function when weight is changed
 
-function updateRowValues(row) {
-    let qty = row.find('.qty').val();
-    let price = row.find('.price').val();
-    let weight = row.find('.weight').val();
-    let discount = row.find('.discount').val();
-    let grossValue = 0;
-    let netValue = 0;
-    let discountValue = 0;
-    
-    if (weight == 'g' || weight == 'ml') {
-        grossValue = qty * price / 1000;
-        discountValue = discount;
-        netValue = grossValue - discountValue;
-    } else if (weight == 'unit') {
-        grossValue = qty * price / 12;
-        discountValue = discount;
-        netValue = grossValue - discountValue;
-    } else {
-        grossValue = qty * price;
-        discountValue = discount;
-        netValue = grossValue - discountValue;
-    }
+            });
 
-    row.find('.gross_value').val(grossValue.toFixed(2));
-    row.find('.total').val(netValue.toFixed(2));
+            function updateRowValues(row) {
+                let qty = row.find('.qty').val();
+                let price = row.find('.price').val();
+                let weight = row.find('.weight').val();
+                let discount = row.find('.discount').val();
+                let grossValue = 0;
+                let netValue = 0;
+                let discountValue = 0;
 
-    updateFooterValues(); // Update footer totals after calculation
-}
+                if (weight == 'g' || weight == 'ml') {
+                    grossValue = qty * price / 1000;
+                    discountValue = discount;
+                    netValue = grossValue - discountValue;
+                } else if (weight == 'unit') {
+                    grossValue = qty * price / 12;
+                    discountValue = discount;
+                    netValue = grossValue - discountValue;
+                } else {
+                    grossValue = qty * price;
+                    discountValue = discount;
+                    netValue = grossValue - discountValue;
+                }
 
-function updateFooterValues() {
-    let totalQty = 0;
-    let totalGrossValue = 0;
-    let totalDiscount = 0;
-    let totalNetValue = 0;
+                row.find('.gross_value').val(grossValue.toFixed(2));
+                row.find('.total').val(netValue.toFixed(2));
 
-    $('#inventory_table tbody tr').each(function(index) {
-        const qty = parseFloat($(this).find('.qty').val()) || 0;
-        const gross_value = parseFloat($(this).find('.gross_value').val()) || 0;
-        const total = parseFloat($(this).find('.total').val()) || 0;
-        const discount = parseFloat($(this).find('.discount').val()) || 0;
+                updateFooterValues(); // Update footer totals after calculation
+            }
 
-        if (qty > 0) {
-        totalQty++; // Increment the count of rows with non-zero qty
-    }
-        totalGrossValue += gross_value;
-        totalDiscount += discount;
-        totalNetValue += total;
-    });
+            function updateFooterValues() {
+                let totalQty = 0;
+                let totalGrossValue = 0;
+                let totalDiscount = 0;
+                let totalNetValue = 0;
 
-    $('#footer_total_qty').val(totalQty);
-    $('#para_total_qty').text(totalQty);
-    $('#footer_purchase_gross_value').val(totalGrossValue);
-    $('#para_gross_value').text(totalGrossValue);
-    $('#footer_discount').val(totalDiscount);
-    $('#para_total_discount').text(totalDiscount);
-    $('#total_net_value').val(totalNetValue);
-    $('#para_total_price').text(totalNetValue);
-}
+                $('#inventory_table tbody tr').each(function(index) {
+                    const qty = parseFloat($(this).find('.qty').val()) || 0;
+                    const gross_value = parseFloat($(this).find('.gross_value').val()) || 0;
+                    const total = parseFloat($(this).find('.total').val()) || 0;
+                    const discount = parseFloat($(this).find('.discount').val()) || 0;
 
-
-        $('#inventory-form').submit(function(e) {
-            e.preventDefault(); // Prevent the default form submission
-
-            var formData = new FormData(this); // Create a FormData object
-
-            $.ajax({
-                url: '{{ route('inventories.store') }}', // URL to send the form data
-                method: 'POST',
-                data: formData,
-                processData: false, // Required for file uploads
-                contentType: false, // Required for file uploads
-                success: function(response) {
-                    // Clear the form after successful submission
-                    setTimeout(function() {
-                        toastr.success(response.message); // Display success toast
-                        location.reload(); // This reloads the page
-                    }, 1000);
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status === 422) {
-                        // Validation error
-                        var errors = xhr.responseJSON.errors; // Extract errors from response
-
-                        // Loop through the errors and show each one in a Toastr error
-                        $.each(errors, function(key, messages) {
-                            messages.forEach(function(message) {
-                                toastr.error(message); // Show error message
-                            });
-                        });
-                    } else {
-                        // Handle other errors
-                        toastr.error('An unexpected error occurred. Please try again.');
+                    if (qty > 0) {
+                        totalQty++; // Increment the count of rows with non-zero qty
                     }
+                    totalGrossValue += gross_value;
+                    totalDiscount += discount;
+                    totalNetValue += total;
+                });
+
+                $('#footer_total_qty').val(totalQty);
+                $('#para_total_qty').text(totalQty);
+                $('#footer_purchase_gross_value').val(totalGrossValue);
+                $('#para_gross_value').text(totalGrossValue);
+                $('#footer_discount').val(totalDiscount);
+                $('#para_total_discount').text(totalDiscount);
+                $('#total_net_value').val(totalNetValue);
+                $('#para_total_price').text(totalNetValue);
+            }
+
+
+            $('#inventory-form').submit(function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                var $form = $(this);
+                var $submitButton = $('#submit');
+
+                // Prevent multiple submissions
+                if ($submitButton.hasClass('is-loading')) {
+                    return false;
+                }
+
+                // Add loading class and disable button
+                $submitButton.addClass('is-loading');
+                $submitButton.prop('disabled', true);
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '{{ route('inventories.store') }}',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.addEventListener("abort", function() {
+                            $submitButton.removeClass('is-loading');
+                            $submitButton.prop('disabled', false);
+                        }, false);
+                        return xhr;
+                    },
+                    success: function(response) {
+                        toastr.success(response.message);
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        // Remove loading state on error
+                        $submitButton.removeClass('is-loading');
+                        $submitButton.prop('disabled', false);
+
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, messages) {
+                                messages.forEach(function(message) {
+                                    toastr.error(message);
+                                });
+                            });
+                        } else {
+                            toastr.error('An unexpected error occurred. Please try again.');
+                        }
+                    }
+                });
+            });
+
+            $('#amount_to_pay').on('input', function() {
+                // Parse the values as numbers
+                let total_amount = parseFloat($("#total_net_value").val()) || 0;
+                let amount_to_pay = parseFloat($(this).val()) || 0;
+
+                if (amount_to_pay > total_amount) {
+                    // If input exceeds total_amount, slice it to fit within range
+                    toastr.error("Amount to pay cannot exceed total amount!");
+                    let sliced_value = $(this).val().slice(0, String(total_amount).length); // Limit length
+                    $(this).val(sliced_value); // Set the sliced value
+                    amount_to_pay = parseFloat(sliced_value) || 0; // Update the variable
+                }
+
+                // Calculate the remaining amount
+                let remaining_amount = total_amount - amount_to_pay;
+
+                // Update the remaining amount in the paragraph and hidden input
+                $("#remaining_amount_para").text(remaining_amount.toFixed(2));
+                $("#remaining_amount").val(remaining_amount);
+            });
+
+
+
+
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#date", {
+                // Set default date to today
+                defaultDate: new Date(),
+                // Enable calendar with date picking
+                dateFormat: "Y-m-d", // Format as YYYY-MM-DD
+                onReady: function(selectedDates, dateStr, instance) {
+                    instance.input.value = dateStr; // Ensure input has the default value
                 }
             });
+
+            flatpickr(".expiry", {
+                dateFormat: "Y-m-d", // Format the date (optional)
+                minDate: "today", // Optionally, prevent selecting past dates
+                locale: "en", // Set locale for the calendar
+            });
+
+
+
         });
 
 
+        document.addEventListener("input", function(event) {
+            // List of allowed selectors
+            const allowedSelectors = [".price", ".qty", ".discount", ".total", "#amount_to_pay"];
+
+            // Check if the event target matches any of the selectors
+            if (allowedSelectors.some(selector => event.target.matches(selector))) {
+                // Remove any non-numeric characters
+                event.target.value = event.target.value.replace(/[^0-9]/g, '');
+            }
         });
-
-        
-
     </script>
 
 

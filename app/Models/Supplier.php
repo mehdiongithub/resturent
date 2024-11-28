@@ -36,4 +36,9 @@ class Supplier extends Model
     {
         return $this->hasMany(PurchaseInvoice::class,'supplier_id');
     }
+
+    public function supplier_account()
+    {
+        return $this->hasMany(SupplierAccount::class,'supplier_id');
+    }
 }

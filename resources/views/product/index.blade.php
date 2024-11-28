@@ -106,6 +106,9 @@ button.action-icon:hover i {
 
 @section('script')
 
+
+<!-- Include DataTables JS -->
+
 <script>
     $(document).ready(function () {
       $("#basic-datatables").DataTable({

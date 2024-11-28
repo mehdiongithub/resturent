@@ -28,6 +28,9 @@ class InventoryRequest extends FormRequest
             // Validate the date field (invoice date)
             'date' => 'required|date',
 
+            // Validate the amount_to_pay field (invoice number)
+            'amount_to_pay' => 'required',
+
             // Validate product_id array
             'product_id' => 'required|array|min:1',
             'product_id.*' => 'required|exists:products,id', // Assuming products table and id column

@@ -17,6 +17,7 @@ class PurchaseInvoiceItem extends Model
         'quantity',
         'price',
         'discount',
+        'uom',
         'total_price',
         'expiry_date',
     ];

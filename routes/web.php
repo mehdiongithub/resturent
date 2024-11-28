@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierAccountController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,14 @@ Route::resource('/suppliers', SupplierController::class)->middleware('auth');
 Route::post('/updateSupplier/{id}', [SupplierController::class, 'updateSupplier'])->name('updateSupplier')->middleware('auth');
 Route::get('/supplierData', [SupplierController::class, 'supplierData'])->name('supplierData')->middleware('auth');
 Route::resource('/inventories', InventoryController::class)->middleware('auth');
+Route::post('/updateinventory/{id}', [InventoryController::class, 'updateinventory'])->name('updateinventory')->middleware('auth');
+
+Route::resource('/accounts', SupplierAccountController::class)->middleware('auth');
+// routes/web.php
+Route::get('/account/create/{supplierId}', [SupplierAccountController::class, 'create'])->name('account.create');
+
+
+
 Route::get('/', function () {
     return redirect()->route('dashboard');
 })->middleware('auth');
