@@ -243,41 +243,58 @@
 
         // Submit form via AJAX
         $('#product-form').submit(function(e) {
-            e.preventDefault(); // Prevent the default form submission
+                e.preventDefault(); // Prevent default form submission
 
-            var formData = new FormData(this); // Create a FormData object
+                var $form = $(this);
+                var $submitButton = $('#submit');
 
-            $.ajax({
-                url: '{{ route('products.store') }}', // URL to send the form data
-                method: 'POST',
-                data: formData,
-                processData: false, // Required for file uploads
-                contentType: false, // Required for file uploads
-                success: function(response) {
-                    // Clear the form after successful submission
-                    setTimeout(function() {
-                        toastr.success(response.message); // Display success toast
-                        location.reload(); // This reloads the page
-                    }, 1000);
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status === 422) {
-                        // Validation error
-                        var errors = xhr.responseJSON.errors; // Extract errors from response
-
-                        // Loop through the errors and show each one in a Toastr error
-                        $.each(errors, function(key, messages) {
-                            messages.forEach(function(message) {
-                                toastr.error(message); // Show error message
-                            });
-                        });
-                    } else {
-                        // Handle other errors
-                        toastr.error('An unexpected error occurred. Please try again.');
-                    }
+                // Prevent multiple submissions
+                if ($submitButton.hasClass('is-loading')) {
+                    return false;
                 }
+
+                // Add loading class and disable button
+                $submitButton.addClass('is-loading');
+                $submitButton.prop('disabled', true);
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '{{ route('products.store') }}',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.addEventListener("abort", function() {
+                            $submitButton.removeClass('is-loading');
+                            $submitButton.prop('disabled', false);
+                        }, false);
+                        return xhr;
+                    },
+                    success: function(response) {
+                        toastr.success(response.message);
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        // Remove loading state on error
+                        $submitButton.removeClass('is-loading');
+                        $submitButton.prop('disabled', false);
+
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, messages) {
+                                messages.forEach(function(message) {
+                                    toastr.error(message);
+                                });
+                            });
+                        } else {
+                            toastr.error('An unexpected error occurred. Please try again.');
+                        }
+                    }
+                });
             });
-        });
 
         $(document).ready(function() {
 

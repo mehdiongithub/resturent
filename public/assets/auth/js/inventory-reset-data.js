@@ -33,9 +33,12 @@ $('#confirmResetBtn').off('click').on('click', function() {
 
     $('#supplier_id').val('');
     $('#supplier_id').val('').trigger('change'); // Reset the select field and trigger change for select2
-
+    
     // Reset the form with the corresponding ID
     $('#' + formId)[0].reset(); // Reset the form using the dynamic form ID
+    $('#inputPhone4').val('');
+    $('#inputName4').val('');
+    selectedSupplier = '';
     removeImage(); // Remove the image preview
 
     // Set the current date in the date input before closing the modal

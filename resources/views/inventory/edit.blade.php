@@ -66,7 +66,8 @@
 
         table thead th,
         table tbody td,
-        table tfoot th {
+        table tfoot th,
+        table tfoot td {
             font-size: 10px !important;
             font-weight: 400 !important;
         }
@@ -79,6 +80,7 @@
     <script>
         var selectedValueSupplier = @json($data->supplier_id);
         var purchase_items = @json($data->items);
+        var inventoryDate = @json($data->invoice_date);
     </script>
 
     <div class="container">
@@ -98,12 +100,14 @@
                             </select>
                             <input type="hidden" value="{{ getUserCompanyId() }}" name="company_id" class="form-control"
                                 id="inputCompanyId4">
+                            <input type="hidden" name="inventory_id" value="{{ $data->inventory_id }}">
+
                         </div>
                         <div class="col-md-4"></div>
                         <div class="col-md-4">
                             <label for="date" class="form-label">Invoice Date</label>
-                            <input type="text" value="{{ $data->inventory_date }}" name="date"
-                                class="form-control" id="date">
+                            <input type="text" value="{{ $data->invoice_date }}" name="date" class="form-control"
+                                id="date">
                             <input type="hidden" value="{{ getUserStoreId() }}" name="store_id" class="form-control"
                                 id="inputStoreId4">
                         </div>
@@ -126,49 +130,61 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forEach($data->items as $item)
-                                    <tr>
-                                        <td>
-                                            <select class="form-control  product_id" name="product_id[]">
-                                                <option value="{{$item->product->id}}">{{$item->product->name}}</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input class="form-control qty" value="{{$item->quantity}}" id="qty" name="qty[]">
-                                        </td>
-                                        <td>
-                                            <select class="form-control weight" name="weight[]">
-                                                <option value="">Select Weight</option>
-                                                <option {{ $item->uom == 'kg' ? 'selected' : '' }} value="kg">kg</option>
-                                                <option {{ $item->uom == 'g' ? 'selected' : '' }} value="g">g</option>
-                                                <option {{ $item->uom == 'liter' ? 'selected' : '' }} value="liter">liter</option>
-                                                <option {{ $item->uom == 'ml' ? 'selected' : '' }} value="ml">ml</option>
-                                                <option {{ $item->uom == 'dozen' ? 'selected' : '' }}  value="dozen">dozen</option>
-                                                <option {{ $item->uom == 'unit' ? 'selected' : '' }}  value="unit">unit</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="number" value="{{$item->price}}" class="form-control price" id="price" name="price[]">
-                                        </td>
-                                        <td>
-                                            <input type="text" value="{{$item->expiry_date}}"  class="form-control expiry" id="expiry"
-                                                name="expiry_date[]">
-                                        </td>
-                                        <td>
-                                            <input class="form-control gross_value" disabled value="{{$item->quantity * $item->price}}" id="gross_value"
-                                                name="gross_value[]">
-                                        </td>
-                                        <td>
-                                            <input class="form-control discount" value="{{$item->discount}}" id="discount" name="discount[]">
-                                        </td>
-                                        <td>
-                                            <input class="form-control total" value="{{$item->total_price}}" id="total" name="total[]">
-                                        </td>
-                                        <td>
-                                            <input type="button" class="text-light btn btn-danger btn-xs remove_row"
-                                                value="-">
-                                        </td>
-                                    </tr>
+                                    @foreach ($data->items as $item)
+                                        <tr>
+                                            <td>
+                                                <select class="form-control  product_id" name="product_id[]">
+                                                    <option value="{{ $item->product->id }}">{{ $item->product->name }}
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input class="form-control qty" value="{{ $item->quantity }}" id="qty"
+                                                    name="qty[]">
+                                            </td>
+                                            <td>
+                                                <select class="form-control weight" name="weight[]">
+                                                    <option value="">Select Weight</option>
+                                                    <option {{ $item->uom == 'kg' ? 'selected' : '' }} value="kg">kg
+                                                    </option>
+                                                    <option {{ $item->uom == 'g' ? 'selected' : '' }} value="g">g
+                                                    </option>
+                                                    <option {{ $item->uom == 'liter' ? 'selected' : '' }} value="liter">
+                                                        liter</option>
+                                                    <option {{ $item->uom == 'ml' ? 'selected' : '' }} value="ml">ml
+                                                    </option>
+                                                    <option {{ $item->uom == 'dozen' ? 'selected' : '' }} value="dozen">
+                                                        dozen</option>
+                                                    <option {{ $item->uom == 'unit' ? 'selected' : '' }} value="unit">
+                                                        unit</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="text" value="{{ $item->price }}"
+                                                    class="form-control price" id="price" name="price[]">
+                                            </td>
+                                            <td>
+                                                <input type="text" value="{{ $item->expiry_date }}"
+                                                    class="form-control expiry" id="expiry" name="expiry_date[]">
+                                            </td>
+                                            <td>
+                                                <input class="form-control gross_value" disabled
+                                                    value="{{ $item->discount + $item->total_price }}" id="gross_value"
+                                                    name="gross_value[]">
+                                            </td>
+                                            <td>
+                                                <input class="form-control discount" value="{{ $item->discount }}"
+                                                    id="discount" name="discount[]">
+                                            </td>
+                                            <td>
+                                                <input class="form-control total" value="{{ $item->total_price }}"
+                                                    id="total" name="total[]">
+                                            </td>
+                                            <td>
+                                                <input type="button" class="text-light btn btn-danger btn-xs remove_row"
+                                                    value="-">
+                                            </td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
@@ -180,7 +196,7 @@
                                         </th>
                                         <th></th>
                                         <th colspan="2" style="text-align: center"></th>
-                                        <th colspan="1"  style="text-align: center">Total Value</th>
+                                        <th colspan="1" style="text-align: center">Total Value</th>
                                         <th colspan="1" style="text-align: center">Total discount</th>
                                         <th style="text-align: center">Total Amount</th>
                                         <th></th>
@@ -188,27 +204,50 @@
                                     <tr>
                                         <th colspan="1"></th>
                                         <th colspan="1">
-                                            <p id="para_total_qty">{{$data->quantity}}</p>
-                                            <input hidden value="{{$data->quantity}}" type="number" name="total_qty" placeholder="0"
-                                                class="form-control total_qty_cls" id="footer_total_qty" readonly>
+                                            <p id="para_total_qty">{{ $data->quantity }}</p>
+                                            <input hidden value="{{ $data->quantity }}" type="number" name="total_qty"
+                                                placeholder="0" class="form-control total_qty_cls" id="footer_total_qty"
+                                                readonly>
                                         </th>
                                         <th colspan="3"></th>
                                         <th style="text-align: right">
-                                            <p id="para_gross_value">{{$data->amount}}</p>
-                                            <input hidden type="number" value="{{$data->amount}}" name="gross_value" placeholder="0"
-                                                class="form-control purchase_gross_value_cls"
+                                            <p id="para_gross_value">{{ $data->amount }}</p>
+                                            <input hidden type="number" value="{{ $data->amount }}" name="gross_value"
+                                                placeholder="0" class="form-control purchase_gross_value_cls"
                                                 id="footer_purchase_gross_value" readonly>
                                         </th>
                                         <th colspan="1" style="text-align: center">
-                                            <p id="para_total_discount">{{$data->discount}}</p>
-                                            <input hidden type="number" value="{{$data->discount}}" name="total_discount" placeholder="0"
+                                            <p id="para_total_discount">{{ $data->discount }}</p>
+                                            <input hidden type="number" value="{{ $data->discount }}"
+                                                name="total_discount" placeholder="0"
                                                 class="form-control total_discount_cls" id="footer_discount" readonly>
                                         </th>
                                         <th style="text-align: right">
-                                            <p id="para_total_price">{{$data->total_price}}</p>
-                                            <input hidden type="number" value="{{$data->total_price}}" name="total_net_value" placeholder="0"
+                                            <p id="para_total_price">{{ $data->total_price }}</p>
+                                            <input hidden type="number" value="{{ $data->total_price }}"
+                                                name="total_net_value" placeholder="0"
                                                 class="form-control total_net_value_cls" id="total_net_value" readonly>
                                         </th>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6"></td>
+                                        <td colspan="1">Paid Amount</td>
+                                        <td colspan="1">
+                                            <input type="text"
+                                                value="{{ optional($data->supplierAccount)->paid_amount ?? '0.00' }}"
+                                                class="form-control" id="amount_to_pay" name="amount_to_pay">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6"></td>
+                                        <td colspan="1">Remaining Amount</td>
+                                        <td colspan="1">
+                                            <input type="hidden" class="form-control" id="remaining_amount"
+                                                name="remaining_amount">
+                                           <p id="remaining_amount_para">    
+                                               {{ optional($data->supplierAccount)->account_balance ?? '0.00' }}
+                                        </p>
+                                        </td>
                                     </tr>
                                 </tfoot>
 
@@ -217,6 +256,7 @@
 
                         <div class="col-md-12 d-flex justify-content-end">
                             <input type="button" value="Back" class="btn btn-success btn-sm ms-2" id="back">
+                            <input type="submit" value="Update" class="btn btn-primary  btn-sm ms-2" id="submit">
                         </div>
 
                     </form>
@@ -230,14 +270,14 @@
     <script>
         let selectedSupplierVal = '';
         let pageReload = true;
-        console.log('this is value of purchase_items',purchase_items);
+        console.log('this is value of purchase_items', purchase_items);
         $(document).ready(function() {
             $('select').select2();
 
             let allProducts = []; // Store all products fetched from the API
             let selectedProducts = []; // Store selected products for each row
 
-            if(pageReload){
+            if (pageReload) {
                 purchase_items.forEach(item => {
                     selectedProducts.push(item.product_id);
                 });
@@ -316,7 +356,7 @@
                 if (selectedValue) {
                     $.ajax({
                         url: '{{ url('getSpecific') }}/' +
-                        selectedValue, // Dynamic URL to fetch product data
+                            selectedValue, // Dynamic URL to fetch product data
                         method: 'GET',
                         success: function(response) {
                             if (response.data) {
@@ -325,7 +365,7 @@
                                 if (priceInput.length >= 0) {
                                     console.log('Setting price value:', response.data.price);
                                     priceInput.val(parseFloat(response.data.price) ||
-                                    0); // Set the price input value
+                                        0); // Set the price input value
                                 } else {
                                     console.log('Price input not found!');
                                 }
@@ -375,7 +415,7 @@
                         </select>      
                     </td>
                     <td>
-                        <input type="number" class="form-control price" name="price[]">
+                        <input type="text" class="form-control price" name="price[]">
                     </td>
                      <td>
                         <input type="date" class="form-control expiry" name="expiry[]">
@@ -455,7 +495,7 @@
                             });
 
                             $('#supplier_id').select2();
-                            
+
                             // If selectedSupplier is passed, set the selected value after the options are populated
                             if (selectedSupplier) {
                                 $('#supplier_id').val(selectedSupplier).trigger('change');
@@ -472,7 +512,7 @@
 
             // Initialize the page with selectedSupplier if available
             var selectedSupplier =
-            @json($data->supplier_id); // Assuming the selected supplier is available in the server-side data
+                @json($data->supplier_id); // Assuming the selected supplier is available in the server-side data
             supplierData(selectedSupplier); // Fetch supplier data and set selected value
 
             productData(); // Fetch product data
@@ -540,52 +580,141 @@
                 });
 
                 $('#footer_total_qty').val(totalQty);
+                $('#para_total_qty').text(totalQty);
                 $('#footer_purchase_gross_value').val(totalGrossValue);
+                $('#para_gross_value').text(totalGrossValue);
                 $('#footer_discount').val(totalDiscount);
+                $('#para_total_discount').text(totalDiscount);
                 $('#total_net_value').val(totalNetValue);
+                $('#para_total_price').text(totalNetValue);
             }
 
+
+            // Include CSRF token in AJAX request headers
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
             $('#inventory-form').submit(function(e) {
                 e.preventDefault(); // Prevent the default form submission
 
-                var formData = new FormData(this); // Create a FormData object
+                var $form = $(this);
+                var $submitButton = $form.find('button[type="submit"]');
+                var formData = new FormData(this);
+                var id = @json($data->inventory_id);
 
+                // Check if the form is currently being submitted
+                if ($form.data('submitting')) {
+                    return false; // Exit if already submitting
+                }
+
+                // Mark the form as currently submitting
+                $form.data('submitting', true);
+
+                // Disable the submit button
+                $submitButton.prop('disabled', true);
+                $submitButton.addClass('is-loading');
+
+                // Add the CSRF token to the AJAX headers
                 $.ajax({
-                    url: '{{ route('inventories.store') }}', // URL to send the form data
+                    url: '{{ route('updateinventory', ':id') }}'.replace(':id', id),
                     method: 'POST',
                     data: formData,
-                    processData: false, // Required for file uploads
-                    contentType: false, // Required for file uploads
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.addEventListener("abort", function() {
+                            resetFormSubmission($form, $submitButton);
+                        }, false);
+                        return xhr;
+                    },
+                    complete: function() {
+                        // Always reset the form submission state
+                        resetFormSubmission($form, $submitButton);
+                    },
                     success: function(response) {
-                        // Clear the form after successful submission
-                        setTimeout(function() {
-                            toastr.success(response.message); // Display success toast
-                            location.reload(); // This reloads the page
-                        }, 1000);
+                        toastr.success(response.message);
+                        window.location.href = '{{ route('inventories.index') }}';
                     },
                     error: function(xhr, status, error) {
                         if (xhr.status === 422) {
-                            // Validation error
-                            var errors = xhr.responseJSON
-                            .errors; // Extract errors from response
-
-                            // Loop through the errors and show each one in a Toastr error
+                            // Validation errors
+                            var errors = xhr.responseJSON.errors;
                             $.each(errors, function(key, messages) {
                                 messages.forEach(function(message) {
-                                    toastr.error(message); // Show error message
+                                    toastr.error(message);
                                 });
                             });
                         } else {
-                            // Handle other errors
+                            // Other errors
                             toastr.error('An unexpected error occurred. Please try again.');
                         }
                     }
                 });
             });
 
+            function resetFormSubmission($form, $submitButton) {
+                $form.data('submitting', false);
+                $submitButton.prop('disabled', false);
+                $submitButton.removeClass('is-loading');
+            }
 
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Assuming $data->inventory_date and $data->expiry_date are passed correctly to JavaScript
+            console.log('inventoryDate', inventoryDate);
+
+            flatpickr("#date", {
+                // Set the default date to the value from the backend, if available
+                defaultDate: inventoryDate || new Date(), // Fallback to today if no value is provided
+                dateFormat: "Y-m-d", // Format as YYYY-MM-DD
+                onReady: function(selectedDates, dateStr, instance) {
+                    instance.input.value = dateStr; // Ensure input has the default value
+                }
+            });
+
+
+            flatpickr(".expiry", {
+                dateFormat: "Y-m-d", // Format the date (optional)
+                minDate: "today", // Optionally, prevent selecting past dates
+                locale: "en", // Set locale for the calendar
+            });
+        });
+
+        document.addEventListener("input", function(event) {
+            // List of allowed selectors
+            const allowedSelectors = [".price", ".qty", ".discount", ".total", "#amount_to_pay"];
+
+            // Check if the event target matches any of the selectors
+            if (allowedSelectors.some(selector => event.target.matches(selector))) {
+                // Remove any non-numeric characters
+                event.target.value = event.target.value.replace(/[^0-9]/g, '');
+            }
+        });
+
+        $(document).ready(function () {
+    $('#amount_to_pay').on('input', function () {
+        let total_amount = parseFloat($("#total_net_value").val()) || 0;
+        let amount_to_pay = parseFloat($(this).val()) || 0;
+
+        if (amount_to_pay > total_amount) {
+            toastr.error("Amount to pay cannot exceed total amount!");
+            let sliced_value = $(this).val().slice(0, String(total_amount).length);
+            $(this).val(sliced_value);
+            amount_to_pay = parseFloat(sliced_value) || 0;
+        }
+
+        let remaining_amount = total_amount - amount_to_pay;
+
+        // Update remaining amount
+        $("#remaining_amount_para").text(remaining_amount.toFixed(2));
+        $("#remaining_amount").val(remaining_amount);
+    });
+});
+
     </script>
 
 

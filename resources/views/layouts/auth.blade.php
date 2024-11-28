@@ -18,6 +18,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />  
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
 
 
     @yield('style')
@@ -126,6 +127,13 @@
                 <a href="{{ route('dashboard') }}">
                   <i class="fas fa-utensils"></i>
                   <p>Recipe</p>
+                </a>                
+              </li>
+
+              <li class="nav-item">
+                <a href="{{ route('accounts.index') }}">
+                  <i class="fas fa-university"></i>
+                  <p>Account</p>
                 </a>                
               </li>
               
@@ -786,8 +794,7 @@
 <script src="{{ asset('assets/auth/js/core/popper.min.js') }}"></script>
 <script src="{{ asset('assets/auth/js/core/bootstrap.min.js') }}"></script>
 
-<!-- jQuery Scrollbar -->
-<script src="{{ asset('assets/auth/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+
 
 <!-- Chart JS -->
 <script src="{{ asset('assets/auth/js/plugin/chart.js/chart.min.js') }}"></script>
@@ -798,15 +805,11 @@
 <!-- Chart Circle -->
 <script src="{{ asset('assets/auth/js/plugin/chart-circle/circles.min.js') }}"></script>
 
-<!-- Datatables -->
-<script src="{{ asset('assets/auth/js/plugin/datatables/datatables.min.js') }}"></script>
 
 <!-- Bootstrap Notify -->
 <script src="{{ asset('assets/auth/js/plugin/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
 
-<!-- jQuery Vector Maps -->
-<script src="{{ asset('assets/auth/js/plugin/jsvectormap/jsvectormap.min.js') }}"></script>
-<script src="{{ asset('assets/auth/js/plugin/jsvectormap/world.js') }}"></script>
+
 
 
 <!-- Sweet Alert -->
@@ -817,9 +820,7 @@
 {{-- Toast JS File --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<!-- Kaiadmin DEMO methods, don't include it in your project! -->
-<script src="{{ asset('assets/auth/js/setting-demo.js') }}"></script>
-<script src="{{ asset('assets/auth/js/demo.js') }}"></script>
+
 
     <script>
       $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
@@ -878,37 +879,28 @@
     });
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    flatpickr("#date", {
-      // Set default date to today
-      defaultDate: new Date(),
-      // Enable calendar with date picking
-      dateFormat: "Y-m-d", // Format as YYYY-MM-DD
-      onReady: function(selectedDates, dateStr, instance) {
-        instance.input.value = dateStr; // Ensure input has the default value
-      }
-    });
 
-    flatpickr(".expiry", {
-    dateFormat: "Y-m-d", // Format the date (optional)
-    minDate: "today", // Optionally, prevent selecting past dates
-    locale: "en", // Set locale for the calendar
-});
-
-  });
 
 
     </script>
-    <script src="{{asset('assets/auth/js/delete-modal.js')}}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Datatables -->
+    <script src="{{ asset('assets/auth/js/plugin/datatables/datatables.min.js') }}"></script>
+    <!-- jQuery Scrollbar -->
+    <script src="{{ asset('assets/auth/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
 
+    <!-- jQuery Vector Maps -->
+    <script src="{{ asset('assets/auth/js/plugin/jsvectormap/jsvectormap.min.js') }}"></script>
+    <script src="{{ asset('assets/auth/js/plugin/jsvectormap/world.js') }}"></script>
 
-    
-
-
+    <!-- Kaiadmin DEMO methods, don't include it in your project! -->
+    <script src="{{ asset('assets/auth/js/setting-demo.js') }}"></script>
+    <script src="{{ asset('assets/auth/js/demo.js') }}"></script>
+    <script src="{{asset('assets/auth/js/delete-modal.js')}}"></script>
+  
 
     <!-- Datatables -->
     @yield('script')
