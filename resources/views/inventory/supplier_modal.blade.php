@@ -1,3 +1,5 @@
+@section('supplier_modal_style')
+
 <!-- Include Quill.js for rich text editing -->
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
@@ -95,8 +97,13 @@
   
 </style>
 
+@endsection
+
 <!-- Modal -->
 <!-- Supplier Modal -->
+
+@section('supplier_modal')
+
 <div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -167,8 +174,9 @@
     </div>
   </div>
 </div>
+@endsection
 
-
+@section('supplier_modal_script')
 <script src="{{ asset('assets/auth/js/core/jquery-3.7.1.min.js') }}"></script>
 {{-- Toast JS File --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -321,3 +329,4 @@
 
   })
 </script>
+@endsection

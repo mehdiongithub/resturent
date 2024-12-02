@@ -1,4 +1,4 @@
-@extends('Layouts.auth');
+@extends('Layouts.auth')
 @section('title')
     Create Inventory
 @endsection
@@ -55,20 +55,20 @@
             font-weight: 400 !important;
         }
 
-        .fw-bold {
+        .page-inner .fw-bold {
             font-size: 10px !important;
             font-weight: 400 !important;
         }
 
-        p {
+        .page-inner p {
             font-size: 10px !important;
+            font-weight: 400 !important;
         }
 
-        table thead th,
-        table tbody td,
-        table tfoot th,
-        table tfoot td
-         {
+        .page-inner table thead th,
+        .page-inner table tbody td,
+        .page-inner table tfoot th,
+        .page-inner table tfoot td {
             font-size: 10px !important;
             font-weight: 400 !important;
         }
@@ -212,6 +212,7 @@
                                             <input hidden type="number" value="{{$data->total_price}}" name="total_net_value" placeholder="0"
                                                 class="form-control total_net_value_cls" id="total_net_value" readonly>
                                         </th>
+                                        <th></th>
                                     </tr>
                                     <tr>
                                         <td colspan="6"></td>
@@ -219,6 +220,7 @@
                                         <td colspan="1">
                                             <input type="text" value="{{ optional($data->supplierAccount)->paid_amount ?? '0.00' }}" disabled class="form-control" id="amount_to_pay" name="amount_to_pay">
                                         </td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <td colspan="6"></td>
@@ -227,6 +229,7 @@
                                             <input type="hidden" class="form-control" id="remaining_amount" name="remaining_amount">
                                             {{ optional($data->supplierAccount)->account_balance ?? '0.00' }}
                                         </td>
+                                        <td></td>
                                     </tr>
                                 </tfoot>
 

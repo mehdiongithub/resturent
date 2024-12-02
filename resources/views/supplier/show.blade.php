@@ -1,4 +1,4 @@
-@extends('Layouts.auth');
+@extends('Layouts.auth')
 @section('title')
 Show Supplier
 @endsection
@@ -25,6 +25,7 @@ Show Supplier
   /* Styling for photo upload container */
   .photo-upload-container {
     position: relative;
+    height: 100%;
   }
 
   /* The actual file input (hidden) */
@@ -58,7 +59,7 @@ Show Supplier
   /* Preview container for the uploaded image */
   .photo-preview {
     width: 50%;
-    height: 100%;
+    height: 80%;
     object-fit: cover;
     border: 2px dashed #ccc;
     border-radius: 8px;
@@ -107,19 +108,18 @@ Show Supplier
                 @csrf
                 <div class="row">
                   <div class="col-md-9">
-                    <div class="col-md-12">
+                    <div class="col-md-12 mb-3">
                       <label for="inputName4" class="form-label">Name</label>
                       <input type="text" disabled value="{{$data->name}}" placeholder="Supplier Name" name="name" class="form-control" id="inputName4">
                       <input type="hidden" value="{{getUserCompanyId()}}" name="company_id" class="form-control" id="inputCompanyId4">
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-12 mb-3">
                       <label for="inputPrice4" class="form-label">Phone No</label>
                       <input type="number" disabled value="{{$data->phone}}" name="phone" placeholder="Supplier Phone No" class="form-control" id="inputPrice4">
                       <input type="hidden" value="{{getUserStoreId()}}" name="store_id" class="form-control" id="inputStoreId4">
                     </div>
                   </div>
                   <div class="col-md-3">
-                    <div class="col-md-12">
                       <label for="photo" class="form-label">Photo</label>
                       <div class="photo-upload-container">
                         <input type="file" id="photo" disabled name="photo" accept="image/*" class="photo-input" onchange="previewImage(event)">
@@ -133,7 +133,7 @@ Show Supplier
                             <i class="bi bi-x"></i> <!-- Cross icon to remove image -->
                           </button> --}}
                         </div>
-                      </div>
+                      
                     </div>
 
                   </div>

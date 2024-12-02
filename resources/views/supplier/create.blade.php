@@ -1,4 +1,4 @@
-@extends('Layouts.auth');
+@extends('Layouts.auth')
 @section('title')
     Create Supplier
 @endsection
@@ -26,6 +26,7 @@
         /* Styling for photo upload container */
         .photo-upload-container {
             position: relative;
+            height: 100%;
         }
 
         /* The actual file input (hidden) */
@@ -59,7 +60,7 @@
         /* Preview container for the uploaded image */
         .photo-preview {
             width: 50%;
-            height: 100%;
+            height: 80%;
             object-fit: cover;
             border: 2px dashed #ccc;
             border-radius: 8px;
@@ -111,7 +112,7 @@
                     <form id="supplier-form" class="row g-3" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
-                            <div class="col-md-9">
+                            <div class="col-md-9 both_same_div">
                                 <div class="col-md-12 mb-3">
                                     <label for="inputName4" class="form-label">Name</label>
                                     <input type="text" placeholder="Supplier Name" name="name" class="form-control"
@@ -128,7 +129,6 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="col-md-12">
                                     <label for="photo" class="form-label">Photo</label>
                                     <div class="photo-upload-container">
                                         <input type="file" id="photo" name="photo" accept="image/*"
@@ -144,7 +144,7 @@
                                                 <i class="bi bi-x"></i> <!-- Cross icon to remove image -->
                                             </button>
                                         </div>
-                                    </div>
+                                    
                                 </div>
 
                             </div>

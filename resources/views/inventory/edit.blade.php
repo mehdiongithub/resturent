@@ -1,4 +1,4 @@
-@extends('Layouts.auth');
+@extends('Layouts.auth')
 @section('title')
     Create Inventory
 @endsection
@@ -55,19 +55,21 @@
             font-weight: 400 !important;
         }
 
-        .fw-bold {
+      
+        .page-inner p {
+            font-size: 10px !important;
+        }
+
+
+        .page-inner .fw-bold {
             font-size: 10px !important;
             font-weight: 400 !important;
         }
 
-        p {
-            font-size: 10px !important;
-        }
-
-        table thead th,
-        table tbody td,
-        table tfoot th,
-        table tfoot td {
+        .page-inner table thead th,
+        .page-inner table tbody td,
+        .page-inner table tfoot th,
+        .page-inner table tfoot td {
             font-size: 10px !important;
             font-weight: 400 !important;
         }
@@ -86,7 +88,7 @@
     <div class="container">
         <div class="page-inner">
             <div class="page-header d-flex justify-content-between align-items-center">
-                <h3 class="fw-bold mb-3" style=" font-size: 20px !important;">Show inventory</h3>
+                <h3 class="fw-bold mb-3" style=" font-size: 20px !important;">Edit inventory</h3>
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -228,6 +230,7 @@
                                                 name="total_net_value" placeholder="0"
                                                 class="form-control total_net_value_cls" id="total_net_value" readonly>
                                         </th>
+                                        <th></th>
                                     </tr>
                                     <tr>
                                         <td colspan="6"></td>
@@ -237,6 +240,7 @@
                                                 value="{{ optional($data->supplierAccount)->paid_amount ?? '0.00' }}"
                                                 class="form-control" id="amount_to_pay" name="amount_to_pay">
                                         </td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <td colspan="6"></td>
@@ -248,6 +252,7 @@
                                                {{ optional($data->supplierAccount)->account_balance ?? '0.00' }}
                                         </p>
                                         </td>
+                                        <td></td>
                                     </tr>
                                 </tfoot>
 
@@ -268,7 +273,7 @@
 
 @section('script')
     <script>
-        let selectedSupplierVal = '';
+        let selectedSupplierIdVal = '';
         let pageReload = true;
         console.log('this is value of purchase_items', purchase_items);
         $(document).ready(function() {
@@ -475,7 +480,7 @@
 
             // Fetch supplier data (already included in your code)
 
-            function supplierData(selectedSupplier = null) {
+            function supplierData(selectedSupplierId = null) {
                 $.ajax({
                     url: '{{ route('supplierData') }}',
                     method: 'GET',
@@ -490,15 +495,16 @@
                             // Loop through the suppliers and populate the dropdown
                             response.data.forEach(function(supplier) {
                                 $('#supplier_id').append(
-                                    `<option value="${supplier.id}" ${selectedSupplier && supplier.id === selectedSupplier ? 'selected' : ''}>${supplier.name}</option>`
+                                    `<option value="${supplier.id}" ${selectedSupplierId && supplier.id === selectedSupplierId ? 'selected' : ''}>${supplier.name}</option>`
                                 );
                             });
 
                             $('#supplier_id').select2();
 
-                            // If selectedSupplier is passed, set the selected value after the options are populated
-                            if (selectedSupplier) {
-                                $('#supplier_id').val(selectedSupplier).trigger('change');
+                            // If selectedSupplierId is passed, set the selected value after the options are populated
+                            if (selectedSupplierId) {
+                                $('#supplier_id').val(selectedSupplierId).trigger('change');
+                                selectedSupplier =  selectedSupplierId;
                             }
                         } else {
                             toastr.error('Suppliers data is invalid or missing.');
@@ -510,10 +516,17 @@
                 });
             }
 
-            // Initialize the page with selectedSupplier if available
-            var selectedSupplier =
+            $('#supplier_id').on('change', function() {
+                const selectedValue = $(this).val();
+                if (selectedValue === 'add_new') {
+                    $('#supplierModal').modal('show');
+                }
+            });
+
+            // Initialize the page with selectedSupplierId if available
+             var selectedSupplierId =
                 @json($data->supplier_id); // Assuming the selected supplier is available in the server-side data
-            supplierData(selectedSupplier); // Fetch supplier data and set selected value
+            supplierData(selectedSupplierId); // Fetch supplier data and set selected value
 
             productData(); // Fetch product data
 

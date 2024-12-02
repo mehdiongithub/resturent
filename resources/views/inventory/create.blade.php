@@ -1,4 +1,4 @@
-@extends('Layouts.auth');
+@extends('Layouts.auth')
 @section('title')
     Create Inventory
 @endsection
@@ -202,6 +202,7 @@
                                             <input hidden type="number" name="total_net_value" placeholder="0"
                                                 class="form-control total_net_value_cls" id="total_net_value" readonly>
                                         </th>
+                                        <th></th>
                                     </tr>
                                     <tr>
                                         <td colspan="6"></td>
@@ -210,6 +211,7 @@
                                             <input type="text" class="form-control" id="amount_to_pay"
                                                 name="amount_to_pay">
                                         </td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <td colspan="6"></td>
@@ -219,6 +221,7 @@
                                                 name="remaining_amount">
                                             <p id="remaining_amount_para">0.00</p>
                                         </td>
+                                        <td></td>
                                     </tr>
                                 </tfoot>
 
