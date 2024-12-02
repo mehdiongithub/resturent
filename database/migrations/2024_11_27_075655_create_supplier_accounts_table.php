@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('company_id');
             $table->uuid('store_id')->nullable(); // branch_id can be nullable
             $table->uuid('supplier_id');
-            $table->uuid('inventory_id');
+            $table->uuid('inventory_id')->nullable();
             $table->decimal('account_balance', 10, 2);
             $table->decimal('paid_amount', 10, 2);
             $table->date('bill_paid_date');

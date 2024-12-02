@@ -124,9 +124,17 @@
         
               
               <li class="nav-item">
+                <a href="{{ route('categories.index') }}">
+                  <i class="fas fa-warehouse"></i>
+                  <p>Category</p>
+                </a>                
+              </li>
+        
+              
+              <li class="nav-item">
                 <a href="{{ route('dashboard') }}">
                   <i class="fas fa-utensils"></i>
-                  <p>Recipe</p>
+                  <p>Menu Item</p>
                 </a>                
               </li>
 

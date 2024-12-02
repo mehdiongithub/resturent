@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierAccountController;
@@ -33,8 +34,12 @@ Route::resource('/inventories', InventoryController::class)->middleware('auth');
 Route::post('/updateinventory/{id}', [InventoryController::class, 'updateinventory'])->name('updateinventory')->middleware('auth');
 
 Route::resource('/accounts', SupplierAccountController::class)->middleware('auth');
+Route::post('/update-account/{id}', [SupplierAccountController::class,'update'])->name('update-account')->middleware('auth');
 // routes/web.php
 Route::get('/account/create/{supplierId}', [SupplierAccountController::class, 'create'])->name('account.create');
+
+Route::resource('/categories', CategoryController::class)->middleware('auth');
+Route::post('/update-product/{id}', [CategoryController::class, 'update'])->name('update-product')->middleware('auth');
 
 
 

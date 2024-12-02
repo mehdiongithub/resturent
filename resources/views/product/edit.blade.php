@@ -1,4 +1,8 @@
 @extends('Layouts.auth');
+@section('title')
+Edit Product Data
+@endsection
+
 @section('style')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
@@ -106,7 +110,7 @@
     <div class="container">
         <div class="page-inner">
             <div class="page-header d-flex justify-content-between align-items-center">
-                <h3 class="fw-bold mb-3">Create Product</h3>
+                <h3 class="fw-bold mb-3">Edit Product</h3>
             </div>
             <div class="row">
                 <div class="col-md-12">

@@ -1,8 +1,4 @@
 @extends('Layouts.auth');
-@section('title')
-View Product Data
-@endsection
-
 @section('style')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
@@ -118,64 +114,23 @@ View Product Data
                 <div class="col-md-12">
                     <form id="product-form" class="row g-3">
                         @csrf
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <label for="inputName4" class="form-label">Name</label>
                             <input type="text" value="{{ $data->name }}" name="name" disabled class="form-control"
                                 id="inputName4">
                             <input type="hidden" value="{{ getUserCompanyId() }}" name="company_id" class="form-control"
                                 id="inputCompanyId4">
                         </div>
-                        <div class="col-md-6">
-                            <label for="inputPrice4" class="form-label">Price</label>
-                            <input type="number" value="{{ $data->price }}" disabled name="price" class="form-control"
-                                id="inputPrice4">
-                            <input type="hidden" value="{{ getUserStoreId() }}" name="store_id" class="form-control"
-                                id="inputStoreId4">
-                        </div>
-
-                        <div class="col-md-6 unit_of_mesu">
-                          <label for="uom" class="form-label">Unit Of Measurement</label>
-                          <select disabled name="uom" class="form-control" id="uom">
-                              <option>Select Unit</option>
-                              <option value="kg" {{ $data->uom == 'kg' ? 'selected' : '' }}>KG</option>
-                              <option value="liter" {{ $data->uom == 'liter' ? 'selected' : '' }}>Liter</option>
-                              <option value="dozen" {{ $data->uom == 'dozen' ? 'selected' : '' }}>Dozen</option>
-                          </select>
-                      </div>
-
-                      <div class="col-md-6 unit_of_mesu">
-                        <label for="product_type" class="form-label">Unit Of Measurement</label>
-                        <select disabled name="product_type" class="form-control" id="product_type">
-                            <option>Select Product Type</option>
-                            <option {{ $data->product_type == 'long_term' ? 'selected' : '' }} value="long_term">Long Term</option>
-                            <option {{ $data->product_type == 'short_term' ? 'selected' : '' }} value="short_term">Short Term</option>
-                        </select>
-                    </div>
-                      
-
-
-                        <div class="col-md-6">
+                    
+                        <div class="col-md-12">
                             <label for="description" class="form-label">Description</label>
-                            <textarea disabled class="form-control" name="description" id="description" rows="6" placeholder="Write something here...">{{ $data->description }}</textarea>
+                            <textarea disabled class="form-control" name="description" id="description" rows="12" placeholder="Write something here...">{{ $data->description }}</textarea>
+                            <input type="hidden" value="{{ getUserStoreId() }}" name="store_id" class="form-control"
+                            id="inputStoreId4">
+                   
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="photo" class="form-label">Photo</label>
-                            <div class="photo-upload-container">
-                                <input type="file" disabled id="photo" name="photo" accept="image/*"
-                                    class="photo-input" onchange="previewImage(event)">
-                                <label for="photo" class="photo-select-circle">
-                                    <i class="bi bi-camera"></i> <!-- Optional: You can use an icon like a camera here -->
-                                </label>
-
-                                <div id="photo-preview" class="photo-preview" style="display: none;">
-                                    <img id="image-preview" src="" alt="Image Preview">
-                                    <button type="button" disabled class="remove-image-btn" onclick="removeImage()">
-                                        <i class="bi bi-x"></i> <!-- Cross icon to remove image -->
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                       
                         <div class="col-md-12 d-flex justify-content-end">
                             <input type="button" value="Back" class="btn btn-success btn-sm ms-2" id="back">
                         </div>
@@ -216,8 +171,8 @@ View Product Data
 
 
         $('#back').click(function() {
-            // Redirect to the products.index route
-            window.location.href = '{{ route('products.index') }}';
+            // Redirect to the categories.index route
+            window.location.href = '{{ route('categories.index') }}';
             $(document).ready(function() {
 
                 // Initialize Select2

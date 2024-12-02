@@ -1,9 +1,8 @@
 @extends('Layouts.auth')
 
 @section('title')
-Products Data
+Categories Data
 @endsection
-
 
 @section('style')
 <style>
@@ -40,14 +39,14 @@ button.action-icon:hover i {
 <div class="container">
     <div class="page-inner">
       <div class="page-header d-flex justify-content-between align-items-center">
-        <h3 class="fw-bold mb-3">Product</h3>
-        <a href="{{route('products.create')}}" class="btn btn-primary">Add Product</a>
+        <h3 class="fw-bold mb-3">Category</h3>
+        <a href="{{route('categories.create')}}" class="btn btn-primary">Add category</a>
       </div>      
       <div class="row">
         <div class="col-md-12">
           <div class="card">
             <div class="card-header">
-              <h4 class="card-title">Products Data</h4>
+              <h4 class="card-title">Categories Data</h4>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -59,37 +58,33 @@ button.action-icon:hover i {
                     <tr>
                       <th>S:No</th>
                       <th>Name</th>
-                      <th>Uom</th>
-                      <th>Price</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     @include('delete-modal.delete-modal') <!-- Include Modal here -->
                     
-                    @foreach ($data as $product)
+                    @foreach ($data as $category)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $product->name }}</td>
-                            <td>{{ $product->uom }}</td>
-                            <td>{{ $product->price }}</td>
+                            <td>{{ $category->name }}</td>
                             <td>
                                 <!-- Show Link with Icon and Text -->
-                                <a href="{{ route('products.show', $product->id) }}" class="action-icon">
+                                <a href="{{ route('categories.show', $category->id) }}" class="action-icon">
                                     <i class="fas fa-eye"></i>
                                 </a>
                 
                                 <!-- Edit Link with Icon and Text -->
-                                <a href="{{ route('products.edit', $product->id) }}" class="action-icon">
+                                <a href="{{ route('categories.edit', $category->id) }}" class="action-icon">
                                     <i class="fas fa-edit"></i>
                                 </a>
                 
                                 <!-- Delete Form with Icon and Text -->
-                                <form id="deleteForm{{ $product->id }}" action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
+                                <form id="deleteForm{{ $category->id }}" action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <a href="javascript:void(0);" class="action-icon" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                        data-title="Product" data-form-id="deleteForm{{ $product->id }}">
+                                        data-title="category" data-form-id="deleteForm{{ $category->id }}">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
                                 </form>
@@ -119,7 +114,7 @@ button.action-icon:hover i {
       $("#basic-datatables").DataTable({
         "columnDefs": [
           {
-            "targets": 4, // Disable sorting for the 'Action' column (index 4)
+            "targets": 2, // Disable sorting for the 'Action' column (index 4)
             "orderable": false
           }
         ]
@@ -181,7 +176,7 @@ button.action-icon:hover i {
 
     });
 
-    var IndexUrl = "{{ route('products.index') }}";
+    var IndexUrl = "{{ route('categories.index') }}";
 
 
   </script>
