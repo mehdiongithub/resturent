@@ -616,7 +616,7 @@
                 if (amount_to_pay > total_amount) {
                     // If input exceeds total_amount, slice it to fit within range
                     toastr.error("Amount to pay cannot exceed total amount!");
-                    let sliced_value = $(this).val().slice(0, String(total_amount).length); // Limit length
+                    let sliced_value = $(this).val().slice(0, String(total_amount).length - 1); // Limit length
                     $(this).val(sliced_value); // Set the sliced value
                     amount_to_pay = parseFloat(sliced_value) || 0; // Update the variable
                 }
