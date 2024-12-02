@@ -1,4 +1,4 @@
-@extends('Layouts.auth');
+@extends('Layouts.auth')
 @section('title')
 Edit Product Data
 @endsection
@@ -34,6 +34,7 @@ Edit Product Data
         /* Styling for photo upload container */
         .photo-upload-container {
             position: relative;
+            height: 100%;
         }
 
         /* The actual file input (hidden) */

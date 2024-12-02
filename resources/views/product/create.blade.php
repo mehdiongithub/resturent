@@ -1,4 +1,4 @@
-@extends('Layouts.auth');
+@extends('Layouts.auth')
 
 @section('title')
 Create Product Data
@@ -35,6 +35,7 @@ Create Product Data
         /* Styling for photo upload container */
         .photo-upload-container {
             position: relative;
+            height: 100%
         }
 
         /* The actual file input (hidden) */

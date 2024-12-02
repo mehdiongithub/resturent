@@ -1,4 +1,4 @@
-@extends('Layouts.auth');
+@extends('Layouts.auth')
 @section('title')
     Edit Supplier
 @endsection
@@ -26,6 +26,8 @@
         /* Styling for photo upload container */
         .photo-upload-container {
             position: relative;
+            height: 100%;
+
         }
 
         /* The actual file input (hidden) */
@@ -59,7 +61,7 @@
         /* Preview container for the uploaded image */
         .photo-preview {
             width: 50%;
-            height: 100%;
+            height: 80%;
             object-fit: cover;
             border: 2px dashed #ccc;
             border-radius: 8px;
@@ -110,7 +112,7 @@
                         @csrf
                         <div class="row">
                             <div class="col-md-9">
-                                <div class="col-md-12">
+                                <div class="col-md-12 mb-3">
                                     <label for="inputName4" class="form-label">Name</label>
                                     <input type="text" value="{{ $data->name }}" placeholder="Supplier Name"
                                         name="name" class="form-control" id="inputName4">
@@ -119,7 +121,7 @@
                                     <input type="hidden" value="{{ $data->id }}" name="supplier_id"
                                         class="form-control" id="supplier_id">
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-12 mb-3">
                                     <label for="inputPrice4" class="form-label">Phone No</label>
                                     <input type="number" value="{{ $data->phone }}" name="phone"
                                         placeholder="Supplier Phone No" class="form-control" id="inputPrice4">
@@ -128,7 +130,6 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="col-md-12">
                                     <label for="photo" class="form-label">Photo</label>
                                     <div class="photo-upload-container">
                                         <input type="file" id="photo" name="photo" accept="image/*"
@@ -147,7 +148,6 @@
                                                 <i class="bi bi-x"></i> <!-- Cross icon to remove image -->
                                             </button>
                                         </div>
-                                    </div>
                                 </div>
                             </div>
 

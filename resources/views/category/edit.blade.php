@@ -1,4 +1,4 @@
-@extends('Layouts.auth');
+@extends('Layouts.auth')
 @section('title')
 Edit Category Data
 @endsection
